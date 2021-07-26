@@ -1,11 +1,13 @@
-package com.itech4kids.wingsoffire;
+package com.wingsoffireserver.wingsoffire;
 
 import com.mojang.authlib.GameProfile;
 import net.minecraft.server.v1_16_R3.EntityPlayer;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
-import org.bukkit.DyeColor;
 import org.bukkit.Material;
+import org.bukkit.boss.BarColor;
+import org.bukkit.boss.BarStyle;
+import org.bukkit.boss.BossBar;
 import org.bukkit.craftbukkit.v1_16_R3.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
@@ -14,7 +16,6 @@ import org.bukkit.inventory.meta.ItemMeta;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Random;
 
 public class ActivePlayer {
 
@@ -30,13 +31,21 @@ public class ActivePlayer {
     public boolean needsToSelectNumber;
     public GameProfile gameProfile;
     public boolean upgrade;
+    public boolean needsToSelectTribe;
+    public BossBar animusManaBar;
+
+    public boolean isSelectingNumber;
+    public int maxLevel;
 
     public ActivePlayer(Player player) throws IOException {
         EntityPlayer entityPlayer = ((CraftPlayer) player).getHandle();
         this.player = player;
+        maxLevel = 1;
+        isSelectingNumber = false;
         activeAccessories = new ArrayList<>();
         speedMultiplier = 0;
         strengthMultiplier = 0;
+        needsToSelectNumber = false;
         pendingCmd = " ";
         pendingPlayerCmd1 = " ";
         pendingPlayerCmd2 = " ";
@@ -44,6 +53,13 @@ public class ActivePlayer {
         needsToSelectNumber = true;
         gameProfile = entityPlayer.getProfile();
         upgrade = false;
+
+        if (Config.isAnimus(player)){
+            animusManaBar = Bukkit.createBossBar(ChatColor.BLUE + "Animus Magic: " + Config.getMana(player), BarColor.BLUE, BarStyle.SOLID);
+            animusManaBar.addPlayer(player);
+        }else{
+            animusManaBar = null;
+        }
 
         accessoryBag = Bukkit.createInventory(null, 54, "Accessories");
         createAccessoryBag();

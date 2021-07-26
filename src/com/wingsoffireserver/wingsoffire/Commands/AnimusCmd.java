@@ -1,8 +1,9 @@
-package com.itech4kids.wingsoffire.Commands;
+package com.wingsoffireserver.wingsoffire.Commands;
 
-import com.itech4kids.wingsoffire.ActivePlayer;
-import com.itech4kids.wingsoffire.Config;
-import com.itech4kids.wingsoffire.Main;
+import com.wingsoffireserver.wingsoffire.ActivePlayer;
+import com.wingsoffireserver.wingsoffire.Config;
+import com.wingsoffireserver.wingsoffire.Main;
+import com.wingsoffireserver.wingsoffire.SkillInventory;
 import net.minecraft.server.v1_16_R3.ItemArmor;
 import net.minecraft.server.v1_16_R3.ItemAxe;
 import net.minecraft.server.v1_16_R3.ItemSword;
@@ -14,14 +15,17 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.craftbukkit.v1_16_R3.inventory.CraftItemStack;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
+import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.SkullMeta;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
+import org.bukkit.scheduler.BukkitRunnable;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.List;
 import java.util.Random;
 
@@ -62,7 +66,7 @@ public class AnimusCmd implements CommandExecutor {
                                         case "running":
                                             SkullMeta handItemMeta = (SkullMeta) hand.getItemMeta();
                                             if (handItemMeta.getDisplayName().equals(ChatColor.DARK_GRAY + "Generic Talisman") || handItemMeta.getDisplayName().startsWith(ChatColor.AQUA + "Running Talisman ")){
-                                                if ((Integer.valueOf(args[3]) <= 4) || (Integer.valueOf(args[3]) - 1 > Config.getAnimusStudyLevel(player))){
+                                                if ((Integer.valueOf(args[3]) <= 4) && (Integer.valueOf(args[3]) - 1  <= Config.getAnimusStudyLevel(player))){
                                                     if (Config.getMana(player) >= Integer.valueOf(args[3])*10) {
                                                         try { Config.setMana(player, Config.getMana(player) - Integer.valueOf(args[3])*10); } catch (IOException e) { e.printStackTrace(); }
                                                         player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_PLING, 10, 1);
@@ -78,7 +82,7 @@ public class AnimusCmd implements CommandExecutor {
                                                         player.sendMessage(ChatColor.RED + "You don't have enough Mana!");
                                                     }
                                                 }else{
-                                                    player.sendMessage(ChatColor.RED + "Value too large!");
+                                                    player.sendMessage(ChatColor.RED + "Value too large/Further study is needed!");
                                                 }
                                             }
                                             break;
@@ -87,7 +91,7 @@ public class AnimusCmd implements CommandExecutor {
                                         case "shield":
                                             SkullMeta handItemMeta2 = (SkullMeta) hand.getItemMeta();
                                             if (handItemMeta2.getDisplayName().equals(ChatColor.DARK_GRAY + "Generic Talisman") || handItemMeta2.getDisplayName().startsWith(ChatColor.DARK_GRAY + "Shield Talisman " )){
-                                                if (Integer.valueOf(args[3]) <= 5 || (Integer.valueOf(args[3]) - 1 > Config.getAnimusStudyLevel(player))){
+                                                if (Integer.valueOf(args[3]) <= 5 && (Integer.valueOf(args[3]) - 1 <= Config.getAnimusStudyLevel(player))){
                                                     if (Config.getMana(player) >= Integer.valueOf(args[3])*10) {
                                                         try { Config.setMana(player, Config.getMana(player) - Integer.valueOf(args[3])*10); } catch (IOException e) { e.printStackTrace(); }
                                                         player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_PLING, 10, 1);
@@ -103,14 +107,14 @@ public class AnimusCmd implements CommandExecutor {
                                                         player.sendMessage(ChatColor.RED + "You don't have enough Mana!");
                                                     }
                                                 }else{
-                                                    player.sendMessage(ChatColor.RED + "Value too large!");
+                                                    player.sendMessage(ChatColor.RED + "Value too large/Further study is needed!");
                                                 }
                                             }
                                             break;
                                         case "strength":
                                             SkullMeta handItemMeta3 = (SkullMeta) hand.getItemMeta();
                                             if (handItemMeta3.getDisplayName().equals(ChatColor.DARK_GRAY + "Generic Talisman") || handItemMeta3.getDisplayName().startsWith(ChatColor.DARK_RED + "Strength Talisman ")){
-                                                if (Integer.valueOf(args[3]) <= 3 || (Integer.valueOf(args[3]) - 1 > Config.getAnimusStudyLevel(player))){
+                                                if (Integer.valueOf(args[3]) <= 5 && (Integer.valueOf(args[3]) - 1 <= Config.getAnimusStudyLevel(player))){
                                                     if (Config.getMana(player) >= Integer.valueOf(args[3])*10) {
                                                         try { Config.setMana(player, Config.getMana(player) - Integer.valueOf(args[3])*10); } catch (IOException e) { e.printStackTrace(); }
                                                         player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_PLING, 10, 1);
@@ -126,7 +130,7 @@ public class AnimusCmd implements CommandExecutor {
                                                         player.sendMessage(ChatColor.RED + "You don't have enough Mana!");
                                                     }
                                                 }else{
-                                                    player.sendMessage(ChatColor.RED + "Value too large!");
+                                                    player.sendMessage(ChatColor.RED + "Value too large/Further study is needed!");
                                                 }
                                             }
                                             break;
@@ -246,7 +250,7 @@ public class AnimusCmd implements CommandExecutor {
                                             }
                                             break;
                                         case "axe_of_flames":
-                                            if (Integer.valueOf(args[3]) <= 2 || (Integer.valueOf(args[3]) - 1 > Config.getAnimusStudyLevel(player))){
+                                            if (Integer.valueOf(args[3]) <= 2 && ((Integer.parseInt(args[3]) == 1 && Config.getAnimusStudyLevel(player) >= 2) || (Integer.parseInt(args[3]) == 2 && Config.getAnimusStudyLevel(player) >= 3))){
                                                 if (Config.getMana(player) >= Integer.valueOf(args[3])*10) {
                                                     try { Config.setMana(player, Config.getMana(player) - Integer.valueOf(args[3])*10); } catch (IOException e) { e.printStackTrace(); }
                                                     ItemStack itemStack2 = player.getInventory().getItemInMainHand();
@@ -260,11 +264,11 @@ public class AnimusCmd implements CommandExecutor {
                                                     player.sendMessage(ChatColor.RED + "You don't have enough Mana!");
                                                 }
                                             }else{
-                                                player.sendMessage(ChatColor.RED + "Value too large!");
+                                                player.sendMessage(ChatColor.RED + "Value too large/Further study is needed!");
                                             }
                                             break;
                                         case "heart_scale_armor":
-                                            if (Integer.valueOf(args[3]) <= 2 || (Integer.valueOf(args[3]) - 1 > Config.getAnimusStudyLevel(player))){
+                                            if (Integer.valueOf(args[3]) <= 2 && ((Integer.valueOf(args[3]) == 1 && Config.getAnimusStudyLevel(player) >= 2) || (Integer.valueOf(args[3]) == 2 && Config.getAnimusStudyLevel(player) >= 3))){
                                                 if (Config.getMana(player) >= Integer.valueOf(args[3])*10) {
                                                     try { Config.setMana(player, Config.getMana(player) - Integer.valueOf(args[3])*10); } catch (IOException e) { e.printStackTrace(); }
                                                     ItemStack itemStack3 = player.getInventory().getItemInMainHand();
@@ -272,15 +276,18 @@ public class AnimusCmd implements CommandExecutor {
                                                     List<String> lore3 = new ArrayList<>();
                                                     if (CraftItemStack.asNMSCopy(itemStack3).getItem() instanceof ItemArmor) {
                                                         lore3.add(ChatColor.GRAY + "Heart Scales " + Integer.valueOf(args[3]));
+                                                        itemMeta3.addEnchant(main.glow, 1, true);
                                                     }
-                                                    itemMeta3.setLore(lore3);
-                                                    itemStack3.setItemMeta(itemMeta3);
+                                                    if (!lore3.isEmpty()) {
+                                                        itemMeta3.setLore(lore3);
+                                                        itemStack3.setItemMeta(itemMeta3);
+                                                    }
                                                     player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_PLING, 10, 1);
                                                 }else{
                                                     player.sendMessage(ChatColor.RED + "You don't have enough Mana!");
                                                 }
                                             }else{
-                                                player.sendMessage(ChatColor.RED + "Value too large!");
+                                                player.sendMessage(ChatColor.RED + "Value too large/Further study is needed!");
                                             }
                                             break;
                                         case "help":
@@ -468,6 +475,12 @@ public class AnimusCmd implements CommandExecutor {
                                     break;
                                 case "extreme":
                                     player.setHealth(0);
+                                    new BukkitRunnable() {
+                                        @Override
+                                        public void run () {
+                                            Bukkit.getPluginManager().callEvent(new PlayerDeathEvent(player, new ArrayList<>(), 0, player.getLevel(), player.getName() + " couldn't handle extreme animus magic!"));
+                                        }
+                                    }.runTaskLater(Main.getInstance(), 5);
                                     break;
                                 case "playerbuff":
                                     if (args.length == 2){
@@ -476,7 +489,7 @@ public class AnimusCmd implements CommandExecutor {
                                         Player otherPlayer = Bukkit.getPlayer(args[2]);
                                         switch (args[3].toLowerCase()){
                                             case "health_boost":
-                                                if (Integer.valueOf(args[4]) <= 4 || (Integer.valueOf(args[4]) - 1 > Config.getAnimusStudyLevel(player))) {
+                                                if (Integer.valueOf(args[4]) <= 4 && (Integer.valueOf(args[4]) - 1 > Config.getAnimusStudyLevel(player))) {
                                                     if (Config.getMana(player) >= Integer.valueOf(args[4])*2) {
                                                         try { Config.setMana(player, Config.getMana(player) - Integer.valueOf(args[4])*2); } catch (IOException e) { e.printStackTrace(); }
                                                         player.setHealth(player.getHealth() + 4 + (Integer.valueOf(args[4]) - 1));
@@ -485,25 +498,29 @@ public class AnimusCmd implements CommandExecutor {
                                                         player.sendMessage(ChatColor.RED + "You don't have enough Mana!");
                                                     }
                                                 }else{
-                                                    player.sendMessage(ChatColor.RED + "Value too large!");
+                                                    player.sendMessage(ChatColor.RED + "Value too large/Further study is needed!");
                                                 }
                                                 break;
                                             case "swift_talons":
-                                                if (Integer.valueOf(args[4]) <= 5 || (Integer.valueOf(args[3]) - 1 > Config.getAnimusStudyLevel(player))) {
+                                                if (Integer.valueOf(args[4]) <= 5 && (Integer.valueOf(args[4]) - 1 > Config.getAnimusStudyLevel(player))) {
                                                     if (Config.getMana(player) >= Integer.valueOf(args[4])*10) {
                                                         try { Config.setMana(player, Config.getMana(player) - Integer.valueOf(args[4])*10); } catch (IOException e) { e.printStackTrace(); }
-                                                        otherPlayer.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, Integer.MAX_VALUE, Integer.valueOf(args[4]) - 1));
-                                                        otherPlayer.addPotionEffect(new PotionEffect(PotionEffectType.FAST_DIGGING, Integer.MAX_VALUE, Integer.valueOf(args[4]) - 4));
+                                                        if (Integer.valueOf(args[4]) < 3){
+                                                            otherPlayer.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, Integer.MAX_VALUE, Integer.valueOf(args[4]) - 1));
+                                                        }else{
+                                                            otherPlayer.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, Integer.MAX_VALUE, Integer.valueOf(args[4]) - 1));
+                                                            otherPlayer.addPotionEffect(new PotionEffect(PotionEffectType.FAST_DIGGING, Integer.MAX_VALUE, Integer.valueOf(args[4]) - 4));
+                                                        }
                                                         player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_PLING, 10, 1);
                                                     }else{
                                                         player.sendMessage(ChatColor.RED + "You don't have enough Mana!");
                                                     }
                                                 }else{
-                                                    player.sendMessage(ChatColor.RED + "Value too large!");
+                                                    player.sendMessage(ChatColor.RED + "Value too large/Further study is needed!");
                                                 }
                                                 break;
                                             case "heal_injury":
-                                                if (Integer.valueOf(args[4]) <= 5 || (Integer.valueOf(args[3]) - 1 > Config.getAnimusStudyLevel(player))) {
+                                                if (Integer.valueOf(args[4]) <= 5 && (Integer.valueOf(args[4]) - 1 <= Config.getAnimusStudyLevel(player))) {
                                                     if (Config.getMana(player) >= Integer.valueOf(args[4])*5) {
                                                         try { Config.setMana(player, Config.getMana(player) - Integer.valueOf(args[4])*5); } catch (IOException e) { e.printStackTrace(); }
                                                         otherPlayer.addPotionEffect(new PotionEffect(PotionEffectType.REGENERATION, 60 + (Integer.valueOf(args[4]) - 1), Integer.valueOf(args[4]) - 1));
@@ -512,18 +529,20 @@ public class AnimusCmd implements CommandExecutor {
                                                         player.sendMessage(ChatColor.RED + "You don't have enough Mana!");
                                                     }
                                                 }else{
-                                                    player.sendMessage(ChatColor.RED + "Value too large!");
+                                                    player.sendMessage(ChatColor.RED + "Value too large/Further study is needed!");
                                                 }
                                                 break;
                                             case "stone_scales":
-                                                if (Integer.valueOf(args[4]) <= 4 || (Integer.valueOf(args[3]) - 1 > Config.getAnimusStudyLevel(player))) {
+                                                if (Integer.valueOf(args[4]) <= 4 && (Integer.valueOf(args[4]) - 1 <= Config.getAnimusStudyLevel(player))) {
                                                     if (Config.getMana(player) >= Integer.valueOf(args[4])*10) {
                                                         try { Config.setMana(player, Config.getMana(player) - Integer.valueOf(args[4])*10); } catch (IOException e) { e.printStackTrace(); }
                                                         player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_PLING, 10, 1);
                                                         if (Integer.valueOf(args[4]) == 3) {
+                                                            otherPlayer.removePotionEffect(PotionEffectType.SLOW);
                                                             otherPlayer.addPotionEffect(new PotionEffect(PotionEffectType.SLOW_DIGGING, Integer.MAX_VALUE, 0));
                                                             otherPlayer.addPotionEffect(new PotionEffect(PotionEffectType.DAMAGE_RESISTANCE, Integer.MAX_VALUE, Integer.valueOf(args[4]) - 1));
                                                         } else if (Integer.valueOf(args[4]) >= 4) {
+                                                            otherPlayer.removePotionEffect(PotionEffectType.SLOW);
                                                             otherPlayer.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, Integer.MAX_VALUE, 0));
                                                             otherPlayer.addPotionEffect(new PotionEffect(PotionEffectType.SLOW_DIGGING, Integer.MAX_VALUE, 1));
                                                             otherPlayer.addPotionEffect(new PotionEffect(PotionEffectType.DAMAGE_RESISTANCE, Integer.MAX_VALUE, Integer.valueOf(args[4]) - 1));
@@ -535,11 +554,11 @@ public class AnimusCmd implements CommandExecutor {
                                                         player.sendMessage(ChatColor.RED + "You don't have enough Mana!");
                                                     }
                                                 }else{
-                                                    player.sendMessage(ChatColor.RED + "Value too large!");
+                                                    player.sendMessage(ChatColor.RED + "Value too large/Further study is needed!");
                                                 }
                                                 break;
                                             case "leaping_talons":
-                                                if (Integer.valueOf(args[4]) <= 3 || (Integer.valueOf(args[3]) - 1 > Config.getAnimusStudyLevel(player))) {
+                                                if (Integer.valueOf(args[4]) <= 3 && (Integer.valueOf(args[4]) - 1 <= Config.getAnimusStudyLevel(player))) {
                                                     if (Config.getMana(player) >= Integer.valueOf(args[4])*2) {
                                                         try { Config.setMana(player, Config.getMana(player) - Integer.valueOf(args[4])*2); } catch (IOException e) { e.printStackTrace(); }
                                                         otherPlayer.addPotionEffect(new PotionEffect(PotionEffectType.JUMP, 320, Integer.valueOf(args[4]) - 1));
@@ -548,11 +567,11 @@ public class AnimusCmd implements CommandExecutor {
                                                         player.sendMessage(ChatColor.RED + "You don't have enough Mana!");
                                                     }
                                                 }else{
-                                                    player.sendMessage(ChatColor.RED + "Value too large!");
+                                                    player.sendMessage(ChatColor.RED + "Value too large/Further study is needed!");
                                                 }
                                                 break;
                                             case "magma_scales":
-                                                if (Integer.valueOf(args[4]) <= 2 || (Integer.valueOf(args[3]) - 1 > Config.getAnimusStudyLevel(player))) {
+                                                if (Integer.valueOf(args[4]) <= 2 && (Integer.valueOf(args[4]) - 1 <= Config.getAnimusStudyLevel(player))) {
                                                     if (Config.getMana(player) >= Integer.valueOf(args[4])*10) {
                                                         try { Config.setMana(player, Config.getMana(player) - Integer.valueOf(args[4])*10); } catch (IOException e) { e.printStackTrace(); }
                                                         otherPlayer.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, Integer.MAX_VALUE, 3));
@@ -562,11 +581,11 @@ public class AnimusCmd implements CommandExecutor {
                                                         player.sendMessage(ChatColor.RED + "You don't have enough Mana!");
                                                     }
                                                 }else{
-                                                    player.sendMessage(ChatColor.RED + "Value too large!");
+                                                    player.sendMessage(ChatColor.RED + "Value too large/Further study is needed!");
                                                 }
                                                 break;
                                             case "rejuvenation":
-                                                if (Integer.valueOf(args[4]) <= 2 || (Integer.valueOf(args[3]) - 1 > Config.getAnimusStudyLevel(player))) {
+                                                if (Integer.valueOf(args[4]) <= 2 && (Integer.valueOf(args[4]) - 1 <= Config.getAnimusStudyLevel(player))) {
                                                     if (Config.getMana(player) >= Integer.valueOf(args[4])*5) {
                                                         try { Config.setMana(player, Config.getMana(player) - Integer.valueOf(args[4])*5); } catch (IOException e) { e.printStackTrace(); }
                                                         otherPlayer.addPotionEffect(new PotionEffect(PotionEffectType.HEAL, 1, Integer.valueOf(args[4])));
@@ -575,7 +594,7 @@ public class AnimusCmd implements CommandExecutor {
                                                         player.sendMessage(ChatColor.RED + "You don't have enough Mana!");
                                                     }
                                                 }else{
-                                                    player.sendMessage(ChatColor.RED + "Value too large!");
+                                                    player.sendMessage(ChatColor.RED + "Value too large/Further study is needed!");
                                                 }
                                                 break;
                                             case "cure_disease":
@@ -616,6 +635,11 @@ public class AnimusCmd implements CommandExecutor {
                                                         try { Config.setMana(player, Config.getMana(player) - 20); } catch (IOException e) { e.printStackTrace(); }
                                                         main.setSkin(otherPlayer, args[4]);
                                                         player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_PLING, 10, 1);
+                                                        try {
+                                                            Config.setShapeshift(player, args[4]);
+                                                        } catch (IOException e) {
+                                                            e.printStackTrace();
+                                                        }
                                                     }else{
                                                         player.sendMessage(ChatColor.RED + "You don't have enough Mana!");
                                                     }
@@ -680,9 +704,10 @@ public class AnimusCmd implements CommandExecutor {
                             }
                             break;
                         case "study":
-                            player.sendMessage(ChatColor.GREEN + "Go to the Jade Mountain Academy Librarian to start your studying!");
-                            player.sendMessage(ChatColor.GREEN + "Your current Animus level is: " + (Config.getAnimusStudyLevel(player) + 1));
-                            player.playSound(player.getLocation(), Sound.ENTITY_VILLAGER_YES, 10, 1);
+                            player.openInventory(new SkillInventory(player).getInv());
+//                            player.sendMessage(ChatColor.GREEN + "Go to " + ChatColor.BOLD + "Starflight" + ChatColor.RESET + "" + ChatColor.GREEN + " at the Jade Mountain Library to start studying!");
+//                            player.sendMessage(ChatColor.GREEN + "Your current Animus level is: " + (Config.getAnimusStudyLevel(player) + 1));
+//                            player.playSound(player.getLocation(), Sound.ENTITY_VILLAGER_YES, 10, 1);
                             break;
                         }
                     }

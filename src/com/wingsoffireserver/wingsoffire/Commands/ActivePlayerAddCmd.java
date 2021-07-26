@@ -1,7 +1,7 @@
-package com.itech4kids.wingsoffire.Commands;
+package com.wingsoffireserver.wingsoffire.Commands;
 
-import com.itech4kids.wingsoffire.ActivePlayer;
-import com.itech4kids.wingsoffire.Main;
+import com.wingsoffireserver.wingsoffire.ActivePlayer;
+import com.wingsoffireserver.wingsoffire.Main;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;

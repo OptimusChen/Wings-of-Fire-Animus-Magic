@@ -1,24 +1,15 @@
-package com.itech4kids.wingsoffire;
+package com.wingsoffireserver.wingsoffire;
 
-import net.minecraft.server.v1_16_R3.EntityVillager;
-import net.minecraft.server.v1_16_R3.EntityVillagerTrader;
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.Material;
-import org.bukkit.Sound;
+import net.minecraft.server.v1_16_R3.EntityPlayer;
+import org.bukkit.*;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
-import org.bukkit.entity.Villager;
-import org.bukkit.event.inventory.InventoryClickEvent;
-import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Random;
 
 public class Config {
@@ -29,6 +20,7 @@ public class Config {
         main = m;
         main.getConfig().options().copyDefaults();
         main.saveDefaultConfig();
+
     }
 
     public static ArrayList<ItemStack> getAccessories(Player player){
@@ -184,6 +176,19 @@ public class Config {
         return config.getInt("mana");
     }
 
+    public static void setShapeshift(Player player, String str) throws IOException {
+        File file = new File(main.getDataFolder()+File.separator+"Players"+File.separator+player.getUniqueId()+".yml");
+        FileConfiguration config = YamlConfiguration.loadConfiguration(file);
+        config.set("shapeshift", str);
+        config.save(file);
+    }
+
+    public static String getShapeshift(Player player){
+        File file = new File(main.getDataFolder()+File.separator+"Players"+File.separator+player.getUniqueId()+".yml");
+        FileConfiguration config = YamlConfiguration.loadConfiguration(file);
+        return config.getString("shapeshift");
+    }
+
     public static void createPlayer(String name) throws IOException {
         File folder = new File(main.getDataFolder() + File.separator + "Players");
         if (!folder.exists()) {
@@ -206,6 +211,7 @@ public class Config {
             config.set("undead", false);
             config.set("animus-study-level", 0);
             config.set("mana", 100);
+            config.set("shapeshift", "Default");
 
             if (animus == 0){
                 config.set("animus", true);
@@ -217,151 +223,4 @@ public class Config {
             config.save(playerFile);
         }
     }
-
-
-
-
-
-
-    public static ItemStack getItem(int i, String str){
-        ItemStack itemStack = new ItemStack(Material.WHITE_STAINED_GLASS_PANE, 1);
-        ItemMeta itemMeta = itemStack.getItemMeta();
-        itemMeta.setDisplayName(ChatColor.GREEN + str + " slot #" + i);
-        itemStack.setItemMeta(itemMeta);
-        return itemStack;
-    }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    public static void addHelmet(Player player, ItemStack i) throws IOException {
-        File file = new File(main.getDataFolder()+File.separator+"Players"+File.separator+player.getUniqueId()+".yml");
-        FileConfiguration config = YamlConfiguration.loadConfiguration(file);
-        ArrayList<ItemStack> accessories = (ArrayList<ItemStack>) config.getList("stored-helmets");
-        accessories.add(i);
-        config.set("stored-accessories", accessories);
-        config.save(file);
-    }
-
-    public static ArrayList<ItemStack> getHelmets(Player player){
-        File file = new File(main.getDataFolder()+File.separator+"Players"+File.separator+player.getUniqueId()+".yml");
-        FileConfiguration config = YamlConfiguration.loadConfiguration(file);
-        ArrayList<ItemStack> list = (ArrayList<ItemStack>) config.getList("stored-helmets");
-        return list;
-    }
-
-    public static void removeHelmet(Player player, ItemStack i) throws IOException {
-        File file = new File(main.getDataFolder()+File.separator+"Players"+File.separator+player.getUniqueId()+".yml");
-        FileConfiguration config = YamlConfiguration.loadConfiguration(file);
-        ArrayList<ItemStack> list = (ArrayList<ItemStack>) config.getList("stored-helmets");
-        list.remove(i);
-        config.save(file);
-    }
-
-    public static void addChestplate(Player player, ItemStack i) throws IOException {
-        File file = new File(main.getDataFolder()+File.separator+"Players"+File.separator+player.getUniqueId()+".yml");
-        FileConfiguration config = YamlConfiguration.loadConfiguration(file);
-        ArrayList<ItemStack> accessories = (ArrayList<ItemStack>) config.getList("stored-chestplates");
-        accessories.add(i);
-        config.set("stored-accessories", accessories);
-        config.save(file);
-    }
-
-    public static ArrayList<ItemStack> getChestplates(Player player){
-        File file = new File(main.getDataFolder()+File.separator+"Players"+File.separator+player.getUniqueId()+".yml");
-        FileConfiguration config = YamlConfiguration.loadConfiguration(file);
-        ArrayList<ItemStack> list = (ArrayList<ItemStack>) config.getList("stored-chestplates");
-        return list;
-    }
-
-    public static void removeChestplates(Player player, ItemStack i) throws IOException {
-        File file = new File(main.getDataFolder()+File.separator+"Players"+File.separator+player.getUniqueId()+".yml");
-        FileConfiguration config = YamlConfiguration.loadConfiguration(file);
-        ArrayList<ItemStack> list = (ArrayList<ItemStack>) config.getList("stored-chestplates");
-        list.remove(i);
-        config.save(file);
-    }
-
-    public static void addLeggings(Player player, ItemStack i) throws IOException {
-        File file = new File(main.getDataFolder()+File.separator+"Players"+File.separator+player.getUniqueId()+".yml");
-        FileConfiguration config = YamlConfiguration.loadConfiguration(file);
-        ArrayList<ItemStack> accessories = (ArrayList<ItemStack>) config.getList("stored-leggings");
-        accessories.add(i);
-        config.set("stored-accessories", accessories);
-        config.save(file);
-    }
-
-    public static ArrayList<ItemStack> getLeggings(Player player){
-        File file = new File(main.getDataFolder()+File.separator+"Players"+File.separator+player.getUniqueId()+".yml");
-        FileConfiguration config = YamlConfiguration.loadConfiguration(file);
-        ArrayList<ItemStack> list = (ArrayList<ItemStack>) config.getList("stored-leggings");
-        return list;
-    }
-
-    public static void removeLeggings(Player player, ItemStack i) throws IOException {
-        File file = new File(main.getDataFolder()+File.separator+"Players"+File.separator+player.getUniqueId()+".yml");
-        FileConfiguration config = YamlConfiguration.loadConfiguration(file);
-        ArrayList<ItemStack> list = (ArrayList<ItemStack>) config.getList("stored-leggings");
-        list.remove(i);
-        config.save(file);
-    }
-
-    public static void addBoots(Player player, ItemStack i) throws IOException {
-        File file = new File(main.getDataFolder()+File.separator+"Players"+File.separator+player.getUniqueId()+".yml");
-        FileConfiguration config = YamlConfiguration.loadConfiguration(file);
-        ArrayList<ItemStack> accessories = (ArrayList<ItemStack>) config.getList("stored-boots");
-        accessories.add(i);
-        config.set("stored-accessories", accessories);
-        config.save(file);
-    }
-
-    public static ArrayList<ItemStack> getBoots(Player player){
-        File file = new File(main.getDataFolder()+File.separator+"Players"+File.separator+player.getUniqueId()+".yml");
-        FileConfiguration config = YamlConfiguration.loadConfiguration(file);
-        ArrayList<ItemStack> list = (ArrayList<ItemStack>) config.getList("stored-boots");
-        return list;
-    }
-
-    public static void removeBoots(Player player, ItemStack i) throws IOException {
-        File file = new File(main.getDataFolder() + File.separator + "Players" + File.separator + player.getUniqueId() + ".yml");
-        FileConfiguration config = YamlConfiguration.loadConfiguration(file);
-        ArrayList<ItemStack> list = (ArrayList<ItemStack>) config.getList("stored-boots");
-        list.remove(i);
-        config.save(file);
-    }
-
-    public static void addMinerals(Player player, ItemStack i) throws IOException {
-        File file = new File(main.getDataFolder()+File.separator+"Players"+File.separator+player.getUniqueId()+".yml");
-        FileConfiguration config = YamlConfiguration.loadConfiguration(file);
-        ArrayList<ItemStack> accessories = (ArrayList<ItemStack>) config.getList("stored-minerals");
-        accessories.add(i);
-        config.set("stored-accessories", accessories);
-        config.save(file);
-    }
-
-    public static ArrayList<ItemStack> getMinerals(Player player){
-        File file = new File(main.getDataFolder()+File.separator+"Players"+File.separator+player.getUniqueId()+".yml");
-        FileConfiguration config = YamlConfiguration.loadConfiguration(file);
-        ArrayList<ItemStack> list = (ArrayList<ItemStack>) config.getList("stored-minerals");
-        return list;
-    }
-
-    public static void removeMinerals(Player player, ItemStack i) throws IOException {
-        File file = new File(main.getDataFolder() + File.separator + "Players" + File.separator + player.getUniqueId() + ".yml");
-        FileConfiguration config = YamlConfiguration.loadConfiguration(file);
-        ArrayList<ItemStack> list = (ArrayList<ItemStack>) config.getList("stored-minerals");
-        list.remove(i);
-        config.save(file);
-    }
-
 }

@@ -1,10 +1,10 @@
 version: 1.0
 name: WingsOfFireAccessories
-main: com.itech4kids.wingsoffire.Main
+main: com.wingsoffireserver.wingsoffire.Main
 api-version: 1.13
 commands:
   ab:
-    aliases: []
+    aliases: [accessorybag]
   activeplayer:
     aliases: []
   customItems:
@@ -13,3 +13,5 @@ commands:
     aliases: []
   spawnstudynpc:
     aliases: []
+  aadmin:
+    aliases: [animusadmin]
