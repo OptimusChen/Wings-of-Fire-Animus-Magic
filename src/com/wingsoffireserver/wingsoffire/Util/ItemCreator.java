@@ -3,6 +3,8 @@ package com.wingsoffireserver.wingsoffire.Util;
 import com.wingsoffireserver.wingsoffire.Main;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
+import org.bukkit.enchantments.Enchantment;
+import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.SkullMeta;
@@ -14,7 +16,7 @@ import java.util.List;
 
 public class ItemCreator {
 
-    public ItemStack createEnchantCategoryItem(Material mat, String name, String owner, String... lore){
+    public static ItemStack createEnchantCategoryItem(Material mat, String name, String owner, String... lore){
         ItemStack item = new ItemStack(mat);
         if (owner.equalsIgnoreCase("")) {
             ItemMeta meta = item.getItemMeta();
@@ -43,15 +45,17 @@ public class ItemCreator {
         return item;
     }
 
-    public ItemStack createEnchantItem(Material mat, String name, String manaCost, String id, String...lore){
+    public static ItemStack createEnchantItem(Material mat, String name, String manaCost, String id, String...lore){
         ItemStack item = new ItemStack(mat);
         if (id.equalsIgnoreCase("")){
             ItemMeta meta = item.getItemMeta();
             List<String> itemLore = new ArrayList<>();
-            meta.setDisplayName(ChatColor.translateAlternateColorCodes('&', name) + " " + ChatColor.AQUA + manaCost);
+            meta.setDisplayName(ChatColor.translateAlternateColorCodes('&', name));
             for (String s : lore){
                 itemLore.add(ChatColor.translateAlternateColorCodes('&', "&7" + s));
             }
+            itemLore.add(" ");
+            itemLore.add(ChatColor.AQUA + "Mana Cost: " + ChatColor.GRAY + manaCost);
             itemLore.add(" ");
             itemLore.add(ChatColor.YELLOW + "Click to Enchant!");
             meta.setLore(itemLore);
@@ -59,10 +63,12 @@ public class ItemCreator {
         }else{
             SkullMeta meta = (SkullMeta) item.getItemMeta();
             List<String> itemLore = new ArrayList<>();
-            meta.setDisplayName(ChatColor.translateAlternateColorCodes('&', name) + " " + ChatColor.AQUA + manaCost);
+            meta.setDisplayName(ChatColor.translateAlternateColorCodes('&', name));
             for (String s : lore){
                 itemLore.add(ChatColor.translateAlternateColorCodes('&', "&7" + s));
             }
+            itemLore.add(" ");
+            itemLore.add(ChatColor.AQUA + "Mana Cost: " + ChatColor.GRAY + manaCost);
             itemLore.add(" ");
             itemLore.add(ChatColor.YELLOW + "Click to Enchant!");
             meta.setLore(itemLore);
@@ -72,15 +78,17 @@ public class ItemCreator {
         return item;
     }
 
-    public ItemStack createEnchantItem(Material mat, String name, String manaCost, String owner, boolean b, String...lore){
+    public static ItemStack createEnchantItem(Material mat, String name, String manaCost, String owner, boolean b, String...lore){
         ItemStack item = new ItemStack(mat);
         if (owner.equalsIgnoreCase("")){
             ItemMeta meta = item.getItemMeta();
             List<String> itemLore = new ArrayList<>();
-            meta.setDisplayName(ChatColor.translateAlternateColorCodes('&', name) + " " + ChatColor.AQUA + manaCost);
+            meta.setDisplayName(ChatColor.translateAlternateColorCodes('&', name));
             for (String s : lore){
                 itemLore.add(ChatColor.translateAlternateColorCodes('&', "&7" + s));
             }
+            itemLore.add(" ");
+            itemLore.add(ChatColor.AQUA + "Mana Cost: " + ChatColor.GRAY + manaCost);
             itemLore.add(" ");
             itemLore.add(ChatColor.YELLOW + "Click to Enchant!");
             meta.setLore(itemLore);
@@ -88,16 +96,63 @@ public class ItemCreator {
         }else{
             SkullMeta meta = (SkullMeta) item.getItemMeta();
             List<String> itemLore = new ArrayList<>();
-            meta.setDisplayName(ChatColor.translateAlternateColorCodes('&', name) + " " + ChatColor.AQUA + manaCost);
+            meta.setDisplayName(ChatColor.translateAlternateColorCodes('&', name));
             meta.setOwner(owner);
             for (String s : lore){
                 itemLore.add(ChatColor.translateAlternateColorCodes('&', "&7" + s));
             }
             itemLore.add(" ");
+            itemLore.add(ChatColor.AQUA + "Mana Cost: " + ChatColor.GRAY + manaCost);
+            itemLore.add(" ");
             itemLore.add(ChatColor.YELLOW + "Click to Enchant!");
             meta.setLore(itemLore);
             item.setItemMeta(meta);
         }
+        return item;
+    }
+
+    public static ItemStack createEnchantItem(Material mat, String name, String manaCost, boolean glow, String...lore){
+        ItemStack item = new ItemStack(mat);
+        ItemMeta meta = item.getItemMeta();
+        List<String> itemLore = new ArrayList<>();
+        meta.setDisplayName(ChatColor.translateAlternateColorCodes('&', name));
+        for (String s : lore){
+            itemLore.add(ChatColor.translateAlternateColorCodes('&', "&7" + s));
+        }
+        itemLore.add(" ");
+        itemLore.add(ChatColor.AQUA + "Mana Cost: " + ChatColor.GRAY + manaCost);
+        itemLore.add(" ");
+        itemLore.add(ChatColor.YELLOW + "Click to Enchant!");
+
+        if (glow){
+            meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
+            meta.addEnchant(Enchantment.DURABILITY, 1, true);
+        }
+
+        meta.addItemFlags(ItemFlag.HIDE_UNBREAKABLE);
+        meta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
+        meta.addItemFlags(ItemFlag.HIDE_POTION_EFFECTS);
+        meta.setLore(itemLore);
+        item.setItemMeta(meta);
+        return item;
+    }
+
+
+    public static ItemStack createNotUnlockedItem(Material mat, String name, String manaCost, int unlockLvl, String...lore){
+        ItemStack item = new ItemStack(Material.RED_STAINED_GLASS_PANE);
+        ItemMeta meta = item.getItemMeta();
+        List<String> itemLore = new ArrayList<>();
+        meta.setDisplayName(ChatColor.RED + "[NOT UNLOCKED] " + name);
+        for (String s : lore){
+            itemLore.add(ChatColor.translateAlternateColorCodes('&', "&7" + s));
+        }
+        itemLore.add(" ");
+        itemLore.add(ChatColor.RED + "Unlock at: " + ChatColor.GRAY + "Lvl " + unlockLvl);
+        itemLore.add(" ");
+        itemLore.add(ChatColor.YELLOW + "Click to Enchant!");
+
+        meta.setLore(itemLore);
+        item.setItemMeta(meta);
         return item;
     }
 

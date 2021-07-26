@@ -8,12 +8,14 @@ import com.wingsoffireserver.wingsoffire.ArmorEvent.EventAnalyser;
 import com.wingsoffireserver.wingsoffire.Commands.*;
 
 import com.wingsoffireserver.wingsoffire.Commands.*;
+import com.wingsoffireserver.wingsoffire.Inventory.WoFInventory;
 import com.wingsoffireserver.wingsoffire.NPC.NPC;
 import com.wingsoffireserver.wingsoffire.NPC.PacketReader;
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;
 import com.mojang.authlib.properties.PropertyMap;
 
+import com.wingsoffireserver.wingsoffire.Util.InventoryAnimus;
 import com.wingsoffireserver.wingsoffire.Util.ItemCreator;
 import net.minecraft.server.v1_16_R3.*;
 import org.bukkit.*;
@@ -917,495 +919,511 @@ public class Main extends JavaPlugin {
         });
     }
 
-
     public void openTalismanEnchantingInventory(Player player){
-        simpleEnchantingInventory.clear();
-        ItemStack space1 = new ItemStack(Material.GRAY_STAINED_GLASS_PANE, 1);
-        ItemMeta itemMeta = space1.getItemMeta();
-        itemMeta.setDisplayName(" ");
-        space1.setItemMeta(itemMeta);
-
-        ItemStack space2 = new ItemStack(Material.WHITE_STAINED_GLASS_PANE, 1);
-        ItemMeta itemMeta2 = space2.getItemMeta();
-        itemMeta2.setDisplayName(" ");
-        space2.setItemMeta(itemMeta2);
-
-        for (int i = 0; i < 9; ++i){
-            simpleEnchantingInventory.setItem(i, space2);
-        }
-
-        simpleEnchantingInventory.setItem(9, space2);
-        simpleEnchantingInventory.setItem(17, space2);
-        simpleEnchantingInventory.setItem(18, space2);
-        simpleEnchantingInventory.setItem(26, space2);
-        simpleEnchantingInventory.setItem(27, space2);
-        simpleEnchantingInventory.setItem(35, space2);
-
-        for (int i = 36; i < 45; ++i){
-            simpleEnchantingInventory.setItem(i, space2);
-        }
-
-        ItemStack hand = new ItemStack(Material.PLAYER_HEAD);
-        List<String> lore = new ArrayList<>();
-        SkullMeta handItemMeta = (SkullMeta) hand.getItemMeta();
-        handItemMeta.setOwner("LapisBlock");
-        handItemMeta.setDisplayName(ChatColor.AQUA + "Running Talisman" + ChatColor.AQUA + " (10 Mana per lvl)");
-        lore.add(ChatColor.GRAY + "Putting this talisman in");
-        lore.add(ChatColor.GRAY + "an active talisman slot will");
-        lore.add(ChatColor.GRAY + "grant you +X% speed!");
-        lore.add(ChatColor.GRAY + " ");
-        lore.add(ChatColor.YELLOW + "Click to Enchant!");
-        handItemMeta.setLore(lore);
-        hand.setItemMeta(handItemMeta);
-        simpleEnchantingInventory.addItem(hand);
-
-        lore.clear();
-        lore.add(ChatColor.GRAY + "Putting this talisman in");
-        lore.add(ChatColor.GRAY + "an active talisman slot will");
-        lore.add(ChatColor.GRAY + "grant you +X armor points!");
-        lore.add(ChatColor.GRAY + " ");
-        lore.add(ChatColor.YELLOW + "Click to Enchant!");
-        handItemMeta.setLore(lore);
-        handItemMeta.setDisplayName(ChatColor.DARK_GRAY + "Shield Talisman" + ChatColor.AQUA + " (10 Mana per lvl)");
-        hand.setItemMeta(handItemMeta);
-        hand = IDtoSkull(hand, "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZGE1Yzg2ODY0MTFkNDQ2YzkwYzE5MWM5M2Y4MGI5ZmZiMWNkMjQ3YWExMmEyMjZmODk3OTk4MWFkNDM4OGJlZSJ9fX0=");
-        simpleEnchantingInventory.addItem(hand);
-
-        lore.clear();
-        lore.add(ChatColor.GRAY + "Putting this talisman in");
-        lore.add(ChatColor.GRAY + "an active talisman slot will");
-        lore.add(ChatColor.GRAY + "grant you +X% attack boost!");
-        lore.add(ChatColor.GRAY + " ");
-        lore.add(ChatColor.YELLOW + "Click to Enchant!");
-        handItemMeta.setLore(lore);
-        handItemMeta.setDisplayName(ChatColor.DARK_RED + "Strength Talisman" + ChatColor.AQUA + " (10 Mana per lvl)");
-        hand.setItemMeta(handItemMeta);
-        hand = IDtoSkull(hand, "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvM2IwMzNiMmMyZDNjZjU4OTEzM2FiNzMwZWQxYThiNDQzMTNkNjI5OTU0ODBjM2EwZGFjMzI4ZDUzN2UyN2Q3ZiJ9fX0=");
-        simpleEnchantingInventory.addItem(hand);
-
-        lore.clear();
-        lore.add(ChatColor.GRAY + "Putting this talisman in");
-        lore.add(ChatColor.GRAY + "an active talisman slot will");
-        lore.add(ChatColor.GRAY + "grant you permanent slow-falling!");
-        lore.add(ChatColor.GRAY + " ");
-        lore.add(ChatColor.YELLOW + "Click to Enchant!");
-        handItemMeta.setLore(lore);
-        handItemMeta.setDisplayName(ChatColor.WHITE + "Gliding Talisman" + ChatColor.AQUA + " (5 Mana)");
-        hand.setItemMeta(handItemMeta);
-        hand = IDtoSkull(hand, "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNzZmMzNiMjk3YTk4MWI1MjdiZWMzOTMxNjg0MDFkOGEyZWNhZGViOWYxNjAzYmE1ZTI3NmY0MmQ2NDQ3NTExNiJ9fX0=");
-        simpleEnchantingInventory.addItem(hand);
-
-        lore.clear();
-        lore.add(ChatColor.GRAY + "Putting this talisman in");
-        lore.add(ChatColor.GRAY + "an active talisman slot will");
-        lore.add(ChatColor.GRAY + "grant you permanent invisibility!");
-        lore.add(ChatColor.GRAY + " ");
-        lore.add(ChatColor.YELLOW + "Click to Enchant!");
-        handItemMeta.setLore(lore);
-        handItemMeta.setDisplayName(ChatColor.DARK_GRAY + "Stealth Talisman" + ChatColor.AQUA + " (10 Mana)");
-        hand.setItemMeta(handItemMeta);
-        hand = IDtoSkull(hand, "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvM2IxZTAxN2I1ODQxYjk4NTc3YTJiOGVkOWJmMDIzZDNiZjE0OWQ3ZWY2Y2RkY2VmY2FkZjdiNGIyN2MzMWIzMSJ9fX0=");
-        simpleEnchantingInventory.addItem(hand);
-
-        lore.clear();
-        lore.add(ChatColor.GRAY + "Putting this talisman in");
-        lore.add(ChatColor.GRAY + "an active talisman slot will");
-        lore.add(ChatColor.GRAY + "grant you permanent glowing effect!");
-        lore.add(ChatColor.GRAY + " ");
-        lore.add(ChatColor.YELLOW + "Click to Enchant!");
-        handItemMeta.setLore(lore);
-        handItemMeta.setDisplayName(ChatColor.YELLOW + "Glowing Talisman" + ChatColor.AQUA + " (5 Mana)");
-        hand.setItemMeta(handItemMeta);
-        hand = IDtoSkull(hand, "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvY2Q5ZDE5NWYwOTJlNDM1MDViNTQ5OWU3MzJkY2RiOWU4NTIwNjlkNWFkMzVjMTE0MzJjOTkwYWZjZmU2NDAzNyJ9fX0=");
-        simpleEnchantingInventory.addItem(hand);
-
-        ItemStack book = new ItemStack(Material.ENCHANTED_BOOK);
-        ItemMeta bookMeta = book.getItemMeta();
-        List<String> bookLore = new ArrayList<>();
-        bookMeta.setDisplayName(ChatColor.AQUA + "Sharpness VI" + ChatColor.AQUA + " (15 Mana)");
-        bookLore.add(ChatColor.GRAY + "Adds Sharpness 6 to a");
-        bookLore.add(ChatColor.GRAY + "sword or enchanted");
-        bookLore.add(ChatColor.GRAY + "book!");
-        bookLore.add(ChatColor.GRAY + " ");
-        bookLore.add(ChatColor.YELLOW + "Click to Enchant!");
-        bookMeta.setLore(bookLore);
-        book.setItemMeta(bookMeta);
-        simpleEnchantingInventory.addItem(book);
-
-        ItemStack protBook = new ItemStack(Material.ENCHANTED_BOOK);
-        ItemMeta protBookMeta = protBook.getItemMeta();
-        List<String> protBookLore = new ArrayList<>();
-        protBookMeta.setDisplayName(ChatColor.AQUA + "Protection V" + ChatColor.AQUA + " (15 Mana)");
-        protBookLore.add(ChatColor.GRAY + "Adds Protection 5 to a");
-        protBookLore.add(ChatColor.GRAY + "armor piece or enchanted book!");
-        protBookLore.add(ChatColor.GRAY + " ");
-        protBookLore.add(ChatColor.YELLOW + "Click to Enchant!");
-        protBookMeta.setLore(protBookLore);
-        protBook.setItemMeta(protBookMeta);
-        simpleEnchantingInventory.addItem(protBook);
-
-        ItemStack axeOfFlames = new ItemStack(Material.FIRE_CHARGE);
-        ItemMeta axeOfFlamesMeta = axeOfFlames.getItemMeta();
-        List<String> axeOfFlamesLore = new ArrayList<>();
-        axeOfFlamesMeta.setDisplayName(ChatColor.RED + "Axe of Flames" + ChatColor.AQUA + " (10 Mana per lvl)");
-        axeOfFlamesLore.add(ChatColor.GRAY + "Adds fire aspect to an");
-        axeOfFlamesLore.add(ChatColor.GRAY + "axe!");
-        axeOfFlamesLore.add(ChatColor.GRAY + " ");
-        axeOfFlamesLore.add(ChatColor.YELLOW + "Click to Enchant!");
-        axeOfFlamesMeta.setLore(axeOfFlamesLore);
-        axeOfFlames.setItemMeta(axeOfFlamesMeta);
-        simpleEnchantingInventory.addItem(axeOfFlames);
-
-        ItemStack heartScale = new ItemStack(Material.NETHERITE_CHESTPLATE);
-        ItemMeta heartScaleMeta = heartScale.getItemMeta();
-        List<String> heartScaleLore = new ArrayList<>();
-        heartScaleMeta.setDisplayName(ChatColor.BLUE + "Heart Scales" + ChatColor.AQUA + " (10 Mana per lvl)");
-        heartScaleLore.add(ChatColor.GRAY + "Adds the Heart Scales enchant");
-        heartScaleLore.add(ChatColor.GRAY + "to any armor");
-        heartScaleLore.add(ChatColor.GRAY + " ");
-        heartScaleLore.add(ChatColor.YELLOW + "Click to Enchant!");
-        heartScaleMeta.addItemFlags(ItemFlag.HIDE_PLACED_ON);
-        heartScaleMeta.addItemFlags(ItemFlag.HIDE_POTION_EFFECTS);
-        heartScaleMeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
-        heartScaleMeta.setLore(heartScaleLore);
-        heartScale.setItemMeta(heartScaleMeta);
-        simpleEnchantingInventory.addItem(heartScale);
-        simpleEnchantingInventory.setItem(36, ItemCreator.goBack());
-
-        player.openInventory(simpleEnchantingInventory);
+        InventoryAnimus.openTalismanEnchantingInventory(player, simpleEnchantingInventory);
     }
 
     public void openWeatherEnchantingGui(Player player){
-        weatherEnchantingInventory.clear();
-        ItemStack space1 = new ItemStack(Material.GRAY_STAINED_GLASS_PANE, 1);
-        ItemMeta itemMeta1 = space1.getItemMeta();
-        itemMeta1.setDisplayName(" ");
-        space1.setItemMeta(itemMeta1);
-
-        ItemStack space2 = new ItemStack(Material.WHITE_STAINED_GLASS_PANE, 1);
-        ItemMeta itemMeta2 = space2.getItemMeta();
-        itemMeta2.setDisplayName(" ");
-        space2.setItemMeta(itemMeta2);
-
-        for (int i = 0; i < 9; ++i){
-            weatherEnchantingInventory.setItem(i, space2);
-        }
-
-        weatherEnchantingInventory.setItem(9, space2);
-        weatherEnchantingInventory.setItem(17, space2);
-        weatherEnchantingInventory.setItem(18, space2);
-        weatherEnchantingInventory.setItem(26, space2);
-        weatherEnchantingInventory.setItem(27, space2);
-        weatherEnchantingInventory.setItem(35, space2);
-
-        for (int i = 36; i < 45; ++i){
-            weatherEnchantingInventory.setItem(i, space2);
-        }
-
-        ItemStack item = new ItemStack(Material.SUNFLOWER);
-        ItemMeta itemMeta = item.getItemMeta();
-        List<String> lore = new ArrayList<>();
-        itemMeta.setDisplayName(ChatColor.GOLD + "Part Clouds" + ChatColor.AQUA + " (5 Mana)");
-        lore.add(ChatColor.GRAY + "Clears the current weather");
-        lore.add(ChatColor.GRAY + "and makes it a sunny day!");
-        lore.add(ChatColor.GRAY + " ");
-        lore.add(ChatColor.YELLOW + "Click to enchant!");
-        itemMeta.setLore(lore);
-        item.setItemMeta(itemMeta);
-        weatherEnchantingInventory.addItem(item);
-
-        item = new ItemStack(Material.WATER_BUCKET);
-        itemMeta.setDisplayName(ChatColor.AQUA + "Rain" + ChatColor.AQUA + " (5 Mana)");
-        lore.clear();
-        lore.add(ChatColor.GRAY + "Makes the current weather");
-        lore.add(ChatColor.GRAY + "into rain!");
-        lore.add(ChatColor.GRAY + " ");
-        lore.add(ChatColor.YELLOW + "Click to enchant!");
-        itemMeta.setLore(lore);
-        item.setItemMeta(itemMeta);
-        weatherEnchantingInventory.addItem(item);
-
-        item = new ItemStack(Material.COD_BUCKET);
-        itemMeta.setDisplayName(ChatColor.BLUE + "Thunder Storm" + ChatColor.AQUA + " (5 Mana)");
-        lore.clear();
-        lore.add(ChatColor.GRAY + "Makes the current weather");
-        lore.add(ChatColor.GRAY + "into a thunder storm!");
-        lore.add(ChatColor.GRAY + " ");
-        lore.add(ChatColor.YELLOW + "Click to enchant!");
-        itemMeta.setLore(lore);
-        item.setItemMeta(itemMeta);
-        weatherEnchantingInventory.addItem(item);
-
-        item = new ItemStack(Material.BLAZE_ROD);
-        itemMeta.setDisplayName(ChatColor.YELLOW + "Lightning" + ChatColor.AQUA + " (15 Mana)");
-        lore.clear();
-        lore.add(ChatColor.GRAY + "Summons a lightning bolt");
-        lore.add(ChatColor.GRAY + "in front of you!");
-        lore.add(ChatColor.GRAY + " ");
-        lore.add(ChatColor.YELLOW + "Click to enchant!");
-        itemMeta.setLore(lore);
-        item.setItemMeta(itemMeta);
-        weatherEnchantingInventory.addItem(item);
-
-        item.setType(Material.WATER_BUCKET);
-        weatherEnchantingInventory.setItem(36, ItemCreator.goBack());
-
-        player.openInventory(weatherEnchantingInventory);
-    }
-
-    public void openAnimusCursingGui(Player player){
-        cursesEnchantingInventory.clear();
-        ItemStack space1 = new ItemStack(Material.GRAY_STAINED_GLASS_PANE, 1);
-        ItemMeta itemMeta1 = space1.getItemMeta();
-        itemMeta1.setDisplayName(" ");
-        space1.setItemMeta(itemMeta1);
-
-        ItemStack space2 = new ItemStack(Material.WHITE_STAINED_GLASS_PANE, 1);
-        ItemMeta itemMeta2 = space2.getItemMeta();
-        itemMeta2.setDisplayName(" ");
-        space2.setItemMeta(itemMeta2);
-
-        for (int i = 0; i < 9; ++i){
-            cursesEnchantingInventory.setItem(i, space2);
-        }
-
-        cursesEnchantingInventory.setItem(9, space2);
-        cursesEnchantingInventory.setItem(17, space2);
-        cursesEnchantingInventory.setItem(18, space2);
-        cursesEnchantingInventory.setItem(26, space2);
-        cursesEnchantingInventory.setItem(27, space2);
-        cursesEnchantingInventory.setItem(35, space2);
-
-        for (int i = 36; i < 45; ++i){
-            cursesEnchantingInventory.setItem(i, space2);
-        }
-
-        ItemStack item = new ItemStack(Material.ENCHANTED_BOOK);
-        ItemMeta itemMeta = item.getItemMeta();
-        List<String> lore = new ArrayList<>();
-        itemMeta.setDisplayName(ChatColor.RED + "Curse of Binding" + ChatColor.AQUA + " (10 Mana)");
-        lore.add(ChatColor.GRAY + "Adds Curse of Binding to an");
-        lore.add(ChatColor.GRAY + "item.");
-        lore.add(ChatColor.GRAY + " ");
-        lore.add(ChatColor.YELLOW + "Click to enchant!");
-        itemMeta.setLore(lore);
-        item.setItemMeta(itemMeta);
-        cursesEnchantingInventory.addItem(item);
-
-        lore.clear();
-        itemMeta.setDisplayName(ChatColor.RED + "Curse of Vanishing" + ChatColor.AQUA + " (10 Mana)");
-        lore.add(ChatColor.GRAY + "Adds Curse of Vanishing to an");
-        lore.add(ChatColor.GRAY + "item.");
-        lore.add(ChatColor.GRAY + " ");
-        lore.add(ChatColor.YELLOW + "Click to enchant!");
-        itemMeta.setLore(lore);
-        item.setItemMeta(itemMeta);
-        cursesEnchantingInventory.addItem(item);
-
-        item = new ItemStack(Material.PUFFERFISH);
-        itemMeta = item.getItemMeta();
-        lore = new ArrayList<>();
-        itemMeta.setDisplayName(ChatColor.DARK_GRAY + "Curse of Sickness" + ChatColor.AQUA + " (15 Mana)");
-        lore.add(ChatColor.GRAY + "The named player gets poison");
-        lore.add(ChatColor.GRAY + "for 5 seconds");
-        lore.add(ChatColor.GRAY + " ");
-        lore.add(ChatColor.YELLOW + "Click to Enchant!");
-        itemMeta.setLore(lore);
-        item.setItemMeta(itemMeta);
-        cursesEnchantingInventory.addItem(item);
-
-        lore.clear();
-        item.setType(Material.SPIDER_EYE);
-        itemMeta.setDisplayName(ChatColor.GRAY + "Curse of Degradation" + ChatColor.AQUA + " (40 Mana)");
-        lore.add(ChatColor.GRAY + "The named player gets permanent");
-        lore.add(ChatColor.GRAY + "-3 hearts");
-        lore.add(ChatColor.GRAY + " ");
-        lore.add(ChatColor.YELLOW + "Click to Enchant!");
-        itemMeta.setLore(lore);
-        item.setItemMeta(itemMeta);
-        cursesEnchantingInventory.addItem(item);
-
-        lore.clear();
-        item.setType(Material.ROTTEN_FLESH);
-        itemMeta.setDisplayName(ChatColor.GRAY + "Curse of Undead" + ChatColor.AQUA + " (30 Mana)");
-        lore.add(ChatColor.GRAY + "The named player catches fire");
-        lore.add(ChatColor.GRAY + "while under sunlight.");
-        lore.add(ChatColor.GRAY + " ");
-        lore.add(ChatColor.YELLOW + "Click to Enchant!");
-        itemMeta.setLore(lore);
-        item.setItemMeta(itemMeta);
-        cursesEnchantingInventory.addItem(item);
-
-        lore.clear();
-        item.setType(Material.GRAY_STAINED_GLASS);
-        itemMeta.setDisplayName(ChatColor.GRAY + "Curse of Blindness" + ChatColor.AQUA + " (15 Mana)");
-        lore.add(ChatColor.GRAY + "The named player gets the");
-        lore.add(ChatColor.GRAY + "blindness effect.");
-        lore.add(ChatColor.GRAY + " ");
-        lore.add(ChatColor.YELLOW + "Click to Enchant!");
-        itemMeta.setLore(lore);
-        item.setItemMeta(itemMeta);
-        cursesEnchantingInventory.addItem(item);
-        cursesEnchantingInventory.setItem(36, ItemCreator.goBack());
-
-        player.openInventory(cursesEnchantingInventory);
+        InventoryAnimus.openWeatherEnchantingGui(player, weatherEnchantingInventory);
     }
 
     public void openPlayerEnchantsGui(Player player){
-        playerEnchantingInventory.clear();
-        ItemStack space1 = new ItemStack(Material.GRAY_STAINED_GLASS_PANE, 1);
-        ItemMeta itemMeta2 = space1.getItemMeta();
-        itemMeta2.setDisplayName(" ");
-        space1.setItemMeta(itemMeta2);
-
-        ItemStack space2 = new ItemStack(Material.WHITE_STAINED_GLASS_PANE, 1);
-        ItemMeta itemMeta3 = space2.getItemMeta();
-        itemMeta3.setDisplayName(" ");
-        space2.setItemMeta(itemMeta3);
-
-        for (int i = 0; i < 9; ++i){
-            playerEnchantingInventory.setItem(i, space2);
-        }
-
-        playerEnchantingInventory.setItem(9, space2);
-        playerEnchantingInventory.setItem(17, space2);
-        playerEnchantingInventory.setItem(18, space2);
-        playerEnchantingInventory.setItem(26, space2);
-        playerEnchantingInventory.setItem(27, space2);
-        playerEnchantingInventory.setItem(35, space2);
-
-        for (int i = 36; i < 45; ++i){
-            playerEnchantingInventory.setItem(i, space2);
-        }
-
-        ItemStack item = new ItemStack(Material.GOLDEN_APPLE);
-        ItemMeta itemMeta = item.getItemMeta();
-        List<String> itemLore = new ArrayList<>();
-        itemMeta.setDisplayName(ChatColor.RED + "Health Boost" + ChatColor.AQUA + " (2 Mana per lvl)");
-        itemLore.add(ChatColor.GRAY + "Grants the named player");
-        itemLore.add(ChatColor.GRAY + "+X hearts!");
-        itemLore.add(ChatColor.GRAY + " ");
-        itemLore.add(ChatColor.YELLOW + "Click to Enchant!");
-        itemMeta.setLore(itemLore);
-        item.setItemMeta(itemMeta);
-        playerEnchantingInventory.addItem(item);
-
-        itemLore.clear();
-        item.setType(Material.FEATHER);
-        itemMeta.setDisplayName(ChatColor.WHITE + "Swift Talons" + ChatColor.AQUA + " (10 Mana per lvl)");
-        itemLore.add(ChatColor.GRAY + "Grants the named player");
-        itemLore.add(ChatColor.GRAY + "speed and haste at lvl 4+!");
-        itemLore.add(ChatColor.GRAY + " ");
-        itemLore.add(ChatColor.YELLOW + "Click to Enchant!");
-        itemMeta.setLore(itemLore);
-        item.setItemMeta(itemMeta);
-        playerEnchantingInventory.addItem(item);
-
-        itemLore.clear();
-        item.setType(Material.COBBLESTONE);
-        itemMeta.setDisplayName(ChatColor.DARK_GRAY + "Stone Scales" + ChatColor.AQUA + " (10 Mana per lvl)");
-        itemLore.add(ChatColor.GRAY + "Grants the named player");
-        itemLore.add(ChatColor.GRAY + "resistance..at a cost.");
-        itemLore.add(ChatColor.GRAY + " ");
-        itemLore.add(ChatColor.YELLOW + "Click to Enchant!");
-        itemMeta.setLore(itemLore);
-        item.setItemMeta(itemMeta);
-        playerEnchantingInventory.addItem(item);
-
-        itemLore.clear();
-        item.setType(Material.RABBIT_FOOT);
-        itemMeta.setDisplayName(ChatColor.GREEN + "Leaping Talons" + ChatColor.AQUA + " (2 Mana per lvl)");
-        itemLore.add(ChatColor.GRAY + "Grants the named player");
-        itemLore.add(ChatColor.GRAY + "jump boost!");
-        itemLore.add(ChatColor.GRAY + " ");
-        itemLore.add(ChatColor.YELLOW + "Click to Enchant!");
-        itemMeta.setLore(itemLore);
-        item.setItemMeta(itemMeta);
-        playerEnchantingInventory.addItem(item);
-
-        itemLore.clear();
-        item.setType(Material.LAVA_BUCKET);
-        itemMeta.setDisplayName(ChatColor.GOLD + "Magma Scales" + ChatColor.AQUA + " (10 Mana per lvl)");
-        itemLore.add(ChatColor.GRAY + "Grants the named player");
-        itemLore.add(ChatColor.GRAY + "fire resistance..at a cost.");
-        itemLore.add(ChatColor.GRAY + "Also gives permanent Fire");
-        itemLore.add(ChatColor.GRAY + "Aspect to named player's");
-        itemLore.add(ChatColor.GRAY + "items at lvl 2+.");
-        itemLore.add(ChatColor.GRAY + " ");
-        itemLore.add(ChatColor.YELLOW + "Click to Enchant!");
-        itemMeta.setLore(itemLore);
-        item.setItemMeta(itemMeta);
-        playerEnchantingInventory.addItem(item);
-
-        itemLore.clear();
-        item.setType(Material.GOLDEN_CARROT);
-        itemMeta.setDisplayName(ChatColor.RED + "Rejuvenation" + ChatColor.AQUA + " (5 Mana per lvl)");
-        itemLore.add(ChatColor.GRAY + "Grants the named player");
-        itemLore.add(ChatColor.GRAY + "instant health!");
-        itemLore.add(ChatColor.GRAY + " ");
-        itemLore.add(ChatColor.YELLOW + "Click to Enchant!");
-        itemMeta.setLore(itemLore);
-        item.setItemMeta(itemMeta);
-        playerEnchantingInventory.addItem(item);
-
-        itemLore.clear();
-        item.setType(Material.MILK_BUCKET);
-        itemMeta.setDisplayName(ChatColor.YELLOW + "Cure Disease" + ChatColor.AQUA + " (10 Mana)");
-        itemLore.add(ChatColor.GRAY + "Removes Wither, Poison");
-        itemLore.add(ChatColor.GRAY + "and Hunger from the");
-        itemLore.add(ChatColor.GRAY + "named player!");
-        itemLore.add(ChatColor.GRAY + " ");
-        itemLore.add(ChatColor.YELLOW + "Click to Enchant!");
-        itemMeta.setLore(itemLore);
-        item.setItemMeta(itemMeta);
-        playerEnchantingInventory.addItem(item);
-
-        itemLore.clear();
-        item.setType(Material.DIAMOND_ORE);
-        itemMeta.setDisplayName(ChatColor.AQUA + "Gentle Talons" + ChatColor.AQUA + " (20 Mana)");
-        itemLore.add(ChatColor.GRAY + "Gives the named player");
-        itemLore.add(ChatColor.GRAY + "infinite Silk Touch.");
-        itemLore.add(ChatColor.GRAY + " ");
-        itemLore.add(ChatColor.YELLOW + "Click to Enchant!");
-        itemMeta.setLore(itemLore);
-        item.setItemMeta(itemMeta);
-        playerEnchantingInventory.addItem(item);
-
-        itemLore.clear();
-        item.setType(Material.SLIME_SPAWN_EGG);
-        itemMeta.setDisplayName(ChatColor.GREEN + "Species Shift" + ChatColor.AQUA + " (15 Mana)");
-        itemLore.add(ChatColor.GRAY + "Change your skin to");
-        itemLore.add(ChatColor.GRAY + "another tribe!");
-        itemLore.add(ChatColor.GRAY + " ");
-        itemLore.add(ChatColor.YELLOW + "Click to Enchant!");
-        itemMeta.setLore(itemLore);
-        item.setItemMeta(itemMeta);
-        playerEnchantingInventory.addItem(item);
-
-        itemLore.clear();
-        item.setType(Material.FIRE_CHARGE);
-        itemMeta.setDisplayName(ChatColor.GOLD + ""  + ChatColor.MAGIC + "111 " + ChatColor.RED + "Animus Magic" + ChatColor.GOLD + ""  + ChatColor.MAGIC + " 111" + ChatColor.AQUA + " (80 Mana)");
-        itemLore.add(ChatColor.GRAY + "Enchant player to be an animus.");
-        itemLore.add(ChatColor.GRAY + "0.1% chance of actually");
-        itemLore.add(ChatColor.GRAY + "working!");
-        itemLore.add(ChatColor.GRAY + " ");
-        itemLore.add(ChatColor.GRAY + "" + ChatColor.ITALIC + "I want to run away.");
-        itemLore.add(ChatColor.GRAY + "" + ChatColor.ITALIC + "I want to hide forever.");
-        itemLore.add(ChatColor.GRAY + "" + ChatColor.ITALIC + "But he had no choice.");
-        itemLore.add(ChatColor.GRAY + "" + ChatColor.ITALIC + "Anemone was his responsibility.");
-        itemLore.add(ChatColor.GRAY + "" + ChatColor.ITALIC + "Anemone was his biggest mistake.");
-        itemLore.add(ChatColor.GRAY + "" + ChatColor.ITALIC + " ");
-        itemLore.add(ChatColor.GRAY + "" + ChatColor.ITALIC + "-Talons of Power, Page 239");
-        itemLore.add(ChatColor.GRAY + "" + ChatColor.ITALIC + " ");
-        itemLore.add(ChatColor.YELLOW + "Click to Enchant!");
-        itemMeta.setLore(itemLore);
-        item.setItemMeta(itemMeta);
-        playerEnchantingInventory.addItem(item);
-
-        playerEnchantingInventory.setItem(36, ItemCreator.goBack());
-
-        player.openInventory(playerEnchantingInventory);
+        InventoryAnimus.openPlayerEnchantsGui(player, playerEnchantingInventory);
     }
+
+    public void openAnimusCursingGui(Player player){
+        InventoryAnimus.openAnimusCursingGui(player, cursesEnchantingInventory);
+    }
+
+
+//    public void openTalismanEnchantingInventory(Player player){
+//        simpleEnchantingInventory.clear();
+//        ItemStack space1 = new ItemStack(Material.GRAY_STAINED_GLASS_PANE, 1);
+//        ItemMeta itemMeta = space1.getItemMeta();
+//        itemMeta.setDisplayName(" ");
+//        space1.setItemMeta(itemMeta);
+//
+//        ItemStack space2 = new ItemStack(Material.WHITE_STAINED_GLASS_PANE, 1);
+//        ItemMeta itemMeta2 = space2.getItemMeta();
+//        itemMeta2.setDisplayName(" ");
+//        space2.setItemMeta(itemMeta2);
+//
+//        for (int i = 0; i < 9; ++i){
+//            simpleEnchantingInventory.setItem(i, space2);
+//        }
+//
+//        simpleEnchantingInventory.setItem(9, space2);
+//        simpleEnchantingInventory.setItem(17, space2);
+//        simpleEnchantingInventory.setItem(18, space2);
+//        simpleEnchantingInventory.setItem(26, space2);
+//        simpleEnchantingInventory.setItem(27, space2);
+//        simpleEnchantingInventory.setItem(35, space2);
+//
+//        for (int i = 36; i < 45; ++i){
+//            simpleEnchantingInventory.setItem(i, space2);
+//        }
+//
+//        ItemStack hand = new ItemStack(Material.PLAYER_HEAD);
+//        List<String> lore = new ArrayList<>();
+//        SkullMeta handItemMeta = (SkullMeta) hand.getItemMeta();
+//        handItemMeta.setOwner("LapisBlock");
+//        handItemMeta.setDisplayName(ChatColor.AQUA + "Running Talisman" + ChatColor.AQUA + " (10 Mana per lvl)");
+//        lore.add(ChatColor.GRAY + "Putting this talisman in");
+//        lore.add(ChatColor.GRAY + "an active talisman slot will");
+//        lore.add(ChatColor.GRAY + "grant you +X% speed!");
+//        lore.add(ChatColor.GRAY + " ");
+//        lore.add(ChatColor.YELLOW + "Click to Enchant!");
+//        handItemMeta.setLore(lore);
+//        hand.setItemMeta(handItemMeta);
+//        simpleEnchantingInventory.addItem(hand);
+//
+//        lore.clear();
+//        lore.add(ChatColor.GRAY + "Putting this talisman in");
+//        lore.add(ChatColor.GRAY + "an active talisman slot will");
+//        lore.add(ChatColor.GRAY + "grant you +X armor points!");
+//        lore.add(ChatColor.GRAY + " ");
+//        lore.add(ChatColor.YELLOW + "Click to Enchant!");
+//        handItemMeta.setLore(lore);
+//        handItemMeta.setDisplayName(ChatColor.DARK_GRAY + "Shield Talisman" + ChatColor.AQUA + " (10 Mana per lvl)");
+//        hand.setItemMeta(handItemMeta);
+//        hand = IDtoSkull(hand, "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZGE1Yzg2ODY0MTFkNDQ2YzkwYzE5MWM5M2Y4MGI5ZmZiMWNkMjQ3YWExMmEyMjZmODk3OTk4MWFkNDM4OGJlZSJ9fX0=");
+//        simpleEnchantingInventory.addItem(hand);
+//
+//        lore.clear();
+//        lore.add(ChatColor.GRAY + "Putting this talisman in");
+//        lore.add(ChatColor.GRAY + "an active talisman slot will");
+//        lore.add(ChatColor.GRAY + "grant you +X% attack boost!");
+//        lore.add(ChatColor.GRAY + " ");
+//        lore.add(ChatColor.YELLOW + "Click to Enchant!");
+//        handItemMeta.setLore(lore);
+//        handItemMeta.setDisplayName(ChatColor.DARK_RED + "Strength Talisman" + ChatColor.AQUA + " (10 Mana per lvl)");
+//        hand.setItemMeta(handItemMeta);
+//        hand = IDtoSkull(hand, "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvM2IwMzNiMmMyZDNjZjU4OTEzM2FiNzMwZWQxYThiNDQzMTNkNjI5OTU0ODBjM2EwZGFjMzI4ZDUzN2UyN2Q3ZiJ9fX0=");
+//        simpleEnchantingInventory.addItem(hand);
+//
+//        lore.clear();
+//        lore.add(ChatColor.GRAY + "Putting this talisman in");
+//        lore.add(ChatColor.GRAY + "an active talisman slot will");
+//        lore.add(ChatColor.GRAY + "grant you permanent slow-falling!");
+//        lore.add(ChatColor.GRAY + " ");
+//        lore.add(ChatColor.YELLOW + "Click to Enchant!");
+//        handItemMeta.setLore(lore);
+//        handItemMeta.setDisplayName(ChatColor.WHITE + "Gliding Talisman" + ChatColor.AQUA + " (5 Mana)");
+//        hand.setItemMeta(handItemMeta);
+//        hand = IDtoSkull(hand, "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNzZmMzNiMjk3YTk4MWI1MjdiZWMzOTMxNjg0MDFkOGEyZWNhZGViOWYxNjAzYmE1ZTI3NmY0MmQ2NDQ3NTExNiJ9fX0=");
+//        simpleEnchantingInventory.addItem(hand);
+//
+//        lore.clear();
+//        lore.add(ChatColor.GRAY + "Putting this talisman in");
+//        lore.add(ChatColor.GRAY + "an active talisman slot will");
+//        lore.add(ChatColor.GRAY + "grant you permanent invisibility!");
+//        lore.add(ChatColor.GRAY + " ");
+//        lore.add(ChatColor.YELLOW + "Click to Enchant!");
+//        handItemMeta.setLore(lore);
+//        handItemMeta.setDisplayName(ChatColor.DARK_GRAY + "Stealth Talisman" + ChatColor.AQUA + " (10 Mana)");
+//        hand.setItemMeta(handItemMeta);
+//        hand = IDtoSkull(hand, "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvM2IxZTAxN2I1ODQxYjk4NTc3YTJiOGVkOWJmMDIzZDNiZjE0OWQ3ZWY2Y2RkY2VmY2FkZjdiNGIyN2MzMWIzMSJ9fX0=");
+//        simpleEnchantingInventory.addItem(hand);
+//
+//        lore.clear();
+//        lore.add(ChatColor.GRAY + "Putting this talisman in");
+//        lore.add(ChatColor.GRAY + "an active talisman slot will");
+//        lore.add(ChatColor.GRAY + "grant you permanent glowing effect!");
+//        lore.add(ChatColor.GRAY + " ");
+//        lore.add(ChatColor.YELLOW + "Click to Enchant!");
+//        handItemMeta.setLore(lore);
+//        handItemMeta.setDisplayName(ChatColor.YELLOW + "Glowing Talisman" + ChatColor.AQUA + " (5 Mana)");
+//        hand.setItemMeta(handItemMeta);
+//        hand = IDtoSkull(hand, "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvY2Q5ZDE5NWYwOTJlNDM1MDViNTQ5OWU3MzJkY2RiOWU4NTIwNjlkNWFkMzVjMTE0MzJjOTkwYWZjZmU2NDAzNyJ9fX0=");
+//        simpleEnchantingInventory.addItem(hand);
+//
+//        ItemStack book = new ItemStack(Material.ENCHANTED_BOOK);
+//        ItemMeta bookMeta = book.getItemMeta();
+//        List<String> bookLore = new ArrayList<>();
+//        bookMeta.setDisplayName(ChatColor.AQUA + "Sharpness VI" + ChatColor.AQUA + " (15 Mana)");
+//        bookLore.add(ChatColor.GRAY + "Adds Sharpness 6 to a");
+//        bookLore.add(ChatColor.GRAY + "sword or enchanted");
+//        bookLore.add(ChatColor.GRAY + "book!");
+//        bookLore.add(ChatColor.GRAY + " ");
+//        bookLore.add(ChatColor.YELLOW + "Click to Enchant!");
+//        bookMeta.setLore(bookLore);
+//        book.setItemMeta(bookMeta);
+//        simpleEnchantingInventory.addItem(book);
+//
+//        ItemStack protBook = new ItemStack(Material.ENCHANTED_BOOK);
+//        ItemMeta protBookMeta = protBook.getItemMeta();
+//        List<String> protBookLore = new ArrayList<>();
+//        protBookMeta.setDisplayName(ChatColor.AQUA + "Protection V" + ChatColor.AQUA + " (15 Mana)");
+//        protBookLore.add(ChatColor.GRAY + "Adds Protection 5 to a");
+//        protBookLore.add(ChatColor.GRAY + "armor piece or enchanted book!");
+//        protBookLore.add(ChatColor.GRAY + " ");
+//        protBookLore.add(ChatColor.YELLOW + "Click to Enchant!");
+//        protBookMeta.setLore(protBookLore);
+//        protBook.setItemMeta(protBookMeta);
+//        simpleEnchantingInventory.addItem(protBook);
+//
+//        ItemStack axeOfFlames = new ItemStack(Material.FIRE_CHARGE);
+//        ItemMeta axeOfFlamesMeta = axeOfFlames.getItemMeta();
+//        List<String> axeOfFlamesLore = new ArrayList<>();
+//        axeOfFlamesMeta.setDisplayName(ChatColor.RED + "Axe of Flames" + ChatColor.AQUA + " (10 Mana per lvl)");
+//        axeOfFlamesLore.add(ChatColor.GRAY + "Adds fire aspect to an");
+//        axeOfFlamesLore.add(ChatColor.GRAY + "axe!");
+//        axeOfFlamesLore.add(ChatColor.GRAY + " ");
+//        axeOfFlamesLore.add(ChatColor.YELLOW + "Click to Enchant!");
+//        axeOfFlamesMeta.setLore(axeOfFlamesLore);
+//        axeOfFlames.setItemMeta(axeOfFlamesMeta);
+//        simpleEnchantingInventory.addItem(axeOfFlames);
+//
+//        ItemStack heartScale = new ItemStack(Material.NETHERITE_CHESTPLATE);
+//        ItemMeta heartScaleMeta = heartScale.getItemMeta();
+//        List<String> heartScaleLore = new ArrayList<>();
+//        heartScaleMeta.setDisplayName(ChatColor.BLUE + "Heart Scales" + ChatColor.AQUA + " (10 Mana per lvl)");
+//        heartScaleLore.add(ChatColor.GRAY + "Adds the Heart Scales enchant");
+//        heartScaleLore.add(ChatColor.GRAY + "to any armor");
+//        heartScaleLore.add(ChatColor.GRAY + " ");
+//        heartScaleLore.add(ChatColor.YELLOW + "Click to Enchant!");
+//        heartScaleMeta.addItemFlags(ItemFlag.HIDE_PLACED_ON);
+//        heartScaleMeta.addItemFlags(ItemFlag.HIDE_POTION_EFFECTS);
+//        heartScaleMeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
+//        heartScaleMeta.setLore(heartScaleLore);
+//        heartScale.setItemMeta(heartScaleMeta);
+//        simpleEnchantingInventory.addItem(heartScale);
+//        simpleEnchantingInventory.setItem(36, ItemCreator.goBack());
+//
+//        player.openInventory(simpleEnchantingInventory);
+//    }
+//
+//    public void openWeatherEnchantingGui(Player player){
+//        weatherEnchantingInventory.clear();
+//        ItemStack space1 = new ItemStack(Material.GRAY_STAINED_GLASS_PANE, 1);
+//        ItemMeta itemMeta1 = space1.getItemMeta();
+//        itemMeta1.setDisplayName(" ");
+//        space1.setItemMeta(itemMeta1);
+//
+//        ItemStack space2 = new ItemStack(Material.WHITE_STAINED_GLASS_PANE, 1);
+//        ItemMeta itemMeta2 = space2.getItemMeta();
+//        itemMeta2.setDisplayName(" ");
+//        space2.setItemMeta(itemMeta2);
+//
+//        for (int i = 0; i < 9; ++i){
+//            weatherEnchantingInventory.setItem(i, space2);
+//        }
+//
+//        weatherEnchantingInventory.setItem(9, space2);
+//        weatherEnchantingInventory.setItem(17, space2);
+//        weatherEnchantingInventory.setItem(18, space2);
+//        weatherEnchantingInventory.setItem(26, space2);
+//        weatherEnchantingInventory.setItem(27, space2);
+//        weatherEnchantingInventory.setItem(35, space2);
+//
+//        for (int i = 36; i < 45; ++i){
+//            weatherEnchantingInventory.setItem(i, space2);
+//        }
+//
+//        ItemStack item = new ItemStack(Material.SUNFLOWER);
+//        ItemMeta itemMeta = item.getItemMeta();
+//        List<String> lore = new ArrayList<>();
+//        itemMeta.setDisplayName(ChatColor.GOLD + "Part Clouds" + ChatColor.AQUA + " (5 Mana)");
+//        lore.add(ChatColor.GRAY + "Clears the current weather");
+//        lore.add(ChatColor.GRAY + "and makes it a sunny day!");
+//        lore.add(ChatColor.GRAY + " ");
+//        lore.add(ChatColor.YELLOW + "Click to enchant!");
+//        itemMeta.setLore(lore);
+//        item.setItemMeta(itemMeta);
+//        weatherEnchantingInventory.addItem(item);
+//
+//        item = new ItemStack(Material.WATER_BUCKET);
+//        itemMeta.setDisplayName(ChatColor.AQUA + "Rain" + ChatColor.AQUA + " (5 Mana)");
+//        lore.clear();
+//        lore.add(ChatColor.GRAY + "Makes the current weather");
+//        lore.add(ChatColor.GRAY + "into rain!");
+//        lore.add(ChatColor.GRAY + " ");
+//        lore.add(ChatColor.YELLOW + "Click to enchant!");
+//        itemMeta.setLore(lore);
+//        item.setItemMeta(itemMeta);
+//        weatherEnchantingInventory.addItem(item);
+//
+//        item = new ItemStack(Material.COD_BUCKET);
+//        itemMeta.setDisplayName(ChatColor.BLUE + "Thunder Storm" + ChatColor.AQUA + " (5 Mana)");
+//        lore.clear();
+//        lore.add(ChatColor.GRAY + "Makes the current weather");
+//        lore.add(ChatColor.GRAY + "into a thunder storm!");
+//        lore.add(ChatColor.GRAY + " ");
+//        lore.add(ChatColor.YELLOW + "Click to enchant!");
+//        itemMeta.setLore(lore);
+//        item.setItemMeta(itemMeta);
+//        weatherEnchantingInventory.addItem(item);
+//
+//        item = new ItemStack(Material.BLAZE_ROD);
+//        itemMeta.setDisplayName(ChatColor.YELLOW + "Lightning" + ChatColor.AQUA + " (15 Mana)");
+//        lore.clear();
+//        lore.add(ChatColor.GRAY + "Summons a lightning bolt");
+//        lore.add(ChatColor.GRAY + "in front of you!");
+//        lore.add(ChatColor.GRAY + " ");
+//        lore.add(ChatColor.YELLOW + "Click to enchant!");
+//        itemMeta.setLore(lore);
+//        item.setItemMeta(itemMeta);
+//        weatherEnchantingInventory.addItem(item);
+//
+//        item.setType(Material.WATER_BUCKET);
+//        weatherEnchantingInventory.setItem(36, ItemCreator.goBack());
+//
+//        player.openInventory(weatherEnchantingInventory);
+//    }
+//
+//    public void openAnimusCursingGui(Player player){
+//        cursesEnchantingInventory.clear();
+//        ItemStack space1 = new ItemStack(Material.GRAY_STAINED_GLASS_PANE, 1);
+//        ItemMeta itemMeta1 = space1.getItemMeta();
+//        itemMeta1.setDisplayName(" ");
+//        space1.setItemMeta(itemMeta1);
+//
+//        ItemStack space2 = new ItemStack(Material.WHITE_STAINED_GLASS_PANE, 1);
+//        ItemMeta itemMeta2 = space2.getItemMeta();
+//        itemMeta2.setDisplayName(" ");
+//        space2.setItemMeta(itemMeta2);
+//
+//        for (int i = 0; i < 9; ++i){
+//            cursesEnchantingInventory.setItem(i, space2);
+//        }
+//
+//        cursesEnchantingInventory.setItem(9, space2);
+//        cursesEnchantingInventory.setItem(17, space2);
+//        cursesEnchantingInventory.setItem(18, space2);
+//        cursesEnchantingInventory.setItem(26, space2);
+//        cursesEnchantingInventory.setItem(27, space2);
+//        cursesEnchantingInventory.setItem(35, space2);
+//
+//        for (int i = 36; i < 45; ++i){
+//            cursesEnchantingInventory.setItem(i, space2);
+//        }
+//
+//        ItemStack item = new ItemStack(Material.ENCHANTED_BOOK);
+//        ItemMeta itemMeta = item.getItemMeta();
+//        List<String> lore = new ArrayList<>();
+//        itemMeta.setDisplayName(ChatColor.RED + "Curse of Binding" + ChatColor.AQUA + " (10 Mana)");
+//        lore.add(ChatColor.GRAY + "Adds Curse of Binding to an");
+//        lore.add(ChatColor.GRAY + "item.");
+//        lore.add(ChatColor.GRAY + " ");
+//        lore.add(ChatColor.YELLOW + "Click to enchant!");
+//        itemMeta.setLore(lore);
+//        item.setItemMeta(itemMeta);
+//        cursesEnchantingInventory.addItem(item);
+//
+//        lore.clear();
+//        itemMeta.setDisplayName(ChatColor.RED + "Curse of Vanishing" + ChatColor.AQUA + " (10 Mana)");
+//        lore.add(ChatColor.GRAY + "Adds Curse of Vanishing to an");
+//        lore.add(ChatColor.GRAY + "item.");
+//        lore.add(ChatColor.GRAY + " ");
+//        lore.add(ChatColor.YELLOW + "Click to enchant!");
+//        itemMeta.setLore(lore);
+//        item.setItemMeta(itemMeta);
+//        cursesEnchantingInventory.addItem(item);
+//
+//        item = new ItemStack(Material.PUFFERFISH);
+//        itemMeta = item.getItemMeta();
+//        lore = new ArrayList<>();
+//        itemMeta.setDisplayName(ChatColor.DARK_GRAY + "Curse of Sickness" + ChatColor.AQUA + " (15 Mana)");
+//        lore.add(ChatColor.GRAY + "The named player gets poison");
+//        lore.add(ChatColor.GRAY + "for 5 seconds");
+//        lore.add(ChatColor.GRAY + " ");
+//        lore.add(ChatColor.YELLOW + "Click to Enchant!");
+//        itemMeta.setLore(lore);
+//        item.setItemMeta(itemMeta);
+//        cursesEnchantingInventory.addItem(item);
+//
+//        lore.clear();
+//        item.setType(Material.SPIDER_EYE);
+//        itemMeta.setDisplayName(ChatColor.GRAY + "Curse of Degradation" + ChatColor.AQUA + " (40 Mana)");
+//        lore.add(ChatColor.GRAY + "The named player gets permanent");
+//        lore.add(ChatColor.GRAY + "-3 hearts");
+//        lore.add(ChatColor.GRAY + " ");
+//        lore.add(ChatColor.YELLOW + "Click to Enchant!");
+//        itemMeta.setLore(lore);
+//        item.setItemMeta(itemMeta);
+//        cursesEnchantingInventory.addItem(item);
+//
+//        lore.clear();
+//        item.setType(Material.ROTTEN_FLESH);
+//        itemMeta.setDisplayName(ChatColor.GRAY + "Curse of Undead" + ChatColor.AQUA + " (30 Mana)");
+//        lore.add(ChatColor.GRAY + "The named player catches fire");
+//        lore.add(ChatColor.GRAY + "while under sunlight.");
+//        lore.add(ChatColor.GRAY + " ");
+//        lore.add(ChatColor.YELLOW + "Click to Enchant!");
+//        itemMeta.setLore(lore);
+//        item.setItemMeta(itemMeta);
+//        cursesEnchantingInventory.addItem(item);
+//
+//        lore.clear();
+//        item.setType(Material.GRAY_STAINED_GLASS);
+//        itemMeta.setDisplayName(ChatColor.GRAY + "Curse of Blindness" + ChatColor.AQUA + " (15 Mana)");
+//        lore.add(ChatColor.GRAY + "The named player gets the");
+//        lore.add(ChatColor.GRAY + "blindness effect.");
+//        lore.add(ChatColor.GRAY + " ");
+//        lore.add(ChatColor.YELLOW + "Click to Enchant!");
+//        itemMeta.setLore(lore);
+//        item.setItemMeta(itemMeta);
+//        cursesEnchantingInventory.addItem(item);
+//        cursesEnchantingInventory.setItem(36, ItemCreator.goBack());
+//
+//        player.openInventory(cursesEnchantingInventory);
+//    }
+//
+//    public void openPlayerEnchantsGui(Player player){
+//        playerEnchantingInventory.clear();
+//        ItemStack space1 = new ItemStack(Material.GRAY_STAINED_GLASS_PANE, 1);
+//        ItemMeta itemMeta2 = space1.getItemMeta();
+//        itemMeta2.setDisplayName(" ");
+//        space1.setItemMeta(itemMeta2);
+//
+//        ItemStack space2 = new ItemStack(Material.WHITE_STAINED_GLASS_PANE, 1);
+//        ItemMeta itemMeta3 = space2.getItemMeta();
+//        itemMeta3.setDisplayName(" ");
+//        space2.setItemMeta(itemMeta3);
+//
+//        for (int i = 0; i < 9; ++i){
+//            playerEnchantingInventory.setItem(i, space2);
+//        }
+//
+//        playerEnchantingInventory.setItem(9, space2);
+//        playerEnchantingInventory.setItem(17, space2);
+//        playerEnchantingInventory.setItem(18, space2);
+//        playerEnchantingInventory.setItem(26, space2);
+//        playerEnchantingInventory.setItem(27, space2);
+//        playerEnchantingInventory.setItem(35, space2);
+//
+//        for (int i = 36; i < 45; ++i){
+//            playerEnchantingInventory.setItem(i, space2);
+//        }
+//
+//        ItemStack item = new ItemStack(Material.GOLDEN_APPLE);
+//        ItemMeta itemMeta = item.getItemMeta();
+//        List<String> itemLore = new ArrayList<>();
+//        itemMeta.setDisplayName(ChatColor.RED + "Health Boost" + ChatColor.AQUA + " (2 Mana per lvl)");
+//        itemLore.add(ChatColor.GRAY + "Grants the named player");
+//        itemLore.add(ChatColor.GRAY + "+X hearts!");
+//        itemLore.add(ChatColor.GRAY + " ");
+//        itemLore.add(ChatColor.YELLOW + "Click to Enchant!");
+//        itemMeta.setLore(itemLore);
+//        item.setItemMeta(itemMeta);
+//        playerEnchantingInventory.addItem(item);
+//
+//        itemLore.clear();
+//        item.setType(Material.FEATHER);
+//        itemMeta.setDisplayName(ChatColor.WHITE + "Swift Talons" + ChatColor.AQUA + " (10 Mana per lvl)");
+//        itemLore.add(ChatColor.GRAY + "Grants the named player");
+//        itemLore.add(ChatColor.GRAY + "speed and haste at lvl 4+!");
+//        itemLore.add(ChatColor.GRAY + " ");
+//        itemLore.add(ChatColor.YELLOW + "Click to Enchant!");
+//        itemMeta.setLore(itemLore);
+//        item.setItemMeta(itemMeta);
+//        playerEnchantingInventory.addItem(item);
+//
+//        itemLore.clear();
+//        item.setType(Material.COBBLESTONE);
+//        itemMeta.setDisplayName(ChatColor.DARK_GRAY + "Stone Scales" + ChatColor.AQUA + " (10 Mana per lvl)");
+//        itemLore.add(ChatColor.GRAY + "Grants the named player");
+//        itemLore.add(ChatColor.GRAY + "resistance..at a cost.");
+//        itemLore.add(ChatColor.GRAY + " ");
+//        itemLore.add(ChatColor.YELLOW + "Click to Enchant!");
+//        itemMeta.setLore(itemLore);
+//        item.setItemMeta(itemMeta);
+//        playerEnchantingInventory.addItem(item);
+//
+//        itemLore.clear();
+//        item.setType(Material.RABBIT_FOOT);
+//        itemMeta.setDisplayName(ChatColor.GREEN + "Leaping Talons" + ChatColor.AQUA + " (2 Mana per lvl)");
+//        itemLore.add(ChatColor.GRAY + "Grants the named player");
+//        itemLore.add(ChatColor.GRAY + "jump boost!");
+//        itemLore.add(ChatColor.GRAY + " ");
+//        itemLore.add(ChatColor.YELLOW + "Click to Enchant!");
+//        itemMeta.setLore(itemLore);
+//        item.setItemMeta(itemMeta);
+//        playerEnchantingInventory.addItem(item);
+//
+//        itemLore.clear();
+//        item.setType(Material.LAVA_BUCKET);
+//        itemMeta.setDisplayName(ChatColor.GOLD + "Magma Scales" + ChatColor.AQUA + " (10 Mana per lvl)");
+//        itemLore.add(ChatColor.GRAY + "Grants the named player");
+//        itemLore.add(ChatColor.GRAY + "fire resistance..at a cost.");
+//        itemLore.add(ChatColor.GRAY + "Also gives permanent Fire");
+//        itemLore.add(ChatColor.GRAY + "Aspect to named player's");
+//        itemLore.add(ChatColor.GRAY + "items at lvl 2+.");
+//        itemLore.add(ChatColor.GRAY + " ");
+//        itemLore.add(ChatColor.YELLOW + "Click to Enchant!");
+//        itemMeta.setLore(itemLore);
+//        item.setItemMeta(itemMeta);
+//        playerEnchantingInventory.addItem(item);
+//
+//        itemLore.clear();
+//        item.setType(Material.GOLDEN_CARROT);
+//        itemMeta.setDisplayName(ChatColor.RED + "Rejuvenation" + ChatColor.AQUA + " (5 Mana per lvl)");
+//        itemLore.add(ChatColor.GRAY + "Grants the named player");
+//        itemLore.add(ChatColor.GRAY + "instant health!");
+//        itemLore.add(ChatColor.GRAY + " ");
+//        itemLore.add(ChatColor.YELLOW + "Click to Enchant!");
+//        itemMeta.setLore(itemLore);
+//        item.setItemMeta(itemMeta);
+//        playerEnchantingInventory.addItem(item);
+//
+//        itemLore.clear();
+//        item.setType(Material.MILK_BUCKET);
+//        itemMeta.setDisplayName(ChatColor.YELLOW + "Cure Disease" + ChatColor.AQUA + " (10 Mana)");
+//        itemLore.add(ChatColor.GRAY + "Removes Wither, Poison");
+//        itemLore.add(ChatColor.GRAY + "and Hunger from the");
+//        itemLore.add(ChatColor.GRAY + "named player!");
+//        itemLore.add(ChatColor.GRAY + " ");
+//        itemLore.add(ChatColor.YELLOW + "Click to Enchant!");
+//        itemMeta.setLore(itemLore);
+//        item.setItemMeta(itemMeta);
+//        playerEnchantingInventory.addItem(item);
+//
+//        itemLore.clear();
+//        item.setType(Material.DIAMOND_ORE);
+//        itemMeta.setDisplayName(ChatColor.AQUA + "Gentle Talons" + ChatColor.AQUA + " (20 Mana)");
+//        itemLore.add(ChatColor.GRAY + "Gives the named player");
+//        itemLore.add(ChatColor.GRAY + "infinite Silk Touch.");
+//        itemLore.add(ChatColor.GRAY + " ");
+//        itemLore.add(ChatColor.YELLOW + "Click to Enchant!");
+//        itemMeta.setLore(itemLore);
+//        item.setItemMeta(itemMeta);
+//        playerEnchantingInventory.addItem(item);
+//
+//        itemLore.clear();
+//        item.setType(Material.SLIME_SPAWN_EGG);
+//        itemMeta.setDisplayName(ChatColor.GREEN + "Species Shift" + ChatColor.AQUA + " (15 Mana)");
+//        itemLore.add(ChatColor.GRAY + "Change your skin to");
+//        itemLore.add(ChatColor.GRAY + "another tribe!");
+//        itemLore.add(ChatColor.GRAY + " ");
+//        itemLore.add(ChatColor.YELLOW + "Click to Enchant!");
+//        itemMeta.setLore(itemLore);
+//        item.setItemMeta(itemMeta);
+//        playerEnchantingInventory.addItem(item);
+//
+//        itemLore.clear();
+//        item.setType(Material.FIRE_CHARGE);
+//        itemMeta.setDisplayName(ChatColor.GOLD + ""  + ChatColor.MAGIC + "111 " + ChatColor.RED + "Animus Magic" + ChatColor.GOLD + ""  + ChatColor.MAGIC + " 111" + ChatColor.AQUA + " (80 Mana)");
+//        itemLore.add(ChatColor.GRAY + "Enchant player to be an animus.");
+//        itemLore.add(ChatColor.GRAY + "0.1% chance of actually");
+//        itemLore.add(ChatColor.GRAY + "working!");
+//        itemLore.add(ChatColor.GRAY + " ");
+//        itemLore.add(ChatColor.GRAY + "" + ChatColor.ITALIC + "I want to run away.");
+//        itemLore.add(ChatColor.GRAY + "" + ChatColor.ITALIC + "I want to hide forever.");
+//        itemLore.add(ChatColor.GRAY + "" + ChatColor.ITALIC + "But he had no choice.");
+//        itemLore.add(ChatColor.GRAY + "" + ChatColor.ITALIC + "Anemone was his responsibility.");
+//        itemLore.add(ChatColor.GRAY + "" + ChatColor.ITALIC + "Anemone was his biggest mistake.");
+//        itemLore.add(ChatColor.GRAY + "" + ChatColor.ITALIC + " ");
+//        itemLore.add(ChatColor.GRAY + "" + ChatColor.ITALIC + "-Talons of Power, Page 239");
+//        itemLore.add(ChatColor.GRAY + "" + ChatColor.ITALIC + " ");
+//        itemLore.add(ChatColor.YELLOW + "Click to Enchant!");
+//        itemMeta.setLore(itemLore);
+//        item.setItemMeta(itemMeta);
+//        playerEnchantingInventory.addItem(item);
+//
+//        playerEnchantingInventory.setItem(36, ItemCreator.goBack());
+//
+//        player.openInventory(playerEnchantingInventory);
+//    }
 
 
 

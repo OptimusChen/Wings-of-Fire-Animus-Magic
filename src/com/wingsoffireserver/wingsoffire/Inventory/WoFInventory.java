@@ -1,5 +1,6 @@
 package com.wingsoffireserver.wingsoffire.Inventory;
 
+import com.wingsoffireserver.wingsoffire.Util.ItemCreator;
 import org.bukkit.Material;
 import org.bukkit.craftbukkit.v1_16_R3.inventory.CraftInventoryCustom;
 import org.bukkit.inventory.InventoryHolder;
@@ -53,4 +54,9 @@ public class WoFInventory extends CraftInventoryCustom {
         item.setItemMeta(meta);
         outline(item);
     }
+
+    public void placeBackArrow(int slot){
+        setItem(slot, ItemCreator.goBack());
+    }
+
 }
