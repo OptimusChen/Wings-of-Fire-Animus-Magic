@@ -35,11 +35,7 @@ public class AdminCommand implements CommandExecutor, TabCompleter {
                     switch (args[0].toLowerCase()){
                         case "animus":
                             if (args[2].equalsIgnoreCase("true") || args[2].equalsIgnoreCase("false")) {
-                                try {
-                                    Config.setAnimus(target, Boolean.parseBoolean(args[2].toLowerCase()));
-                                } catch (IOException e) {
-                                    e.printStackTrace();
-                                }
+                                Config.setAnimus(target, Boolean.parseBoolean(args[2].toLowerCase()));
                             }else{
                                 player.sendMessage(ChatColor.RED + "Value must be true/false!");
                             }
@@ -53,11 +49,7 @@ public class AdminCommand implements CommandExecutor, TabCompleter {
                                 player.sendMessage(ChatColor.RED + "This isn't a valid number!");
                                 return false;
                             }
-                            try {
-                                Config.setAnimusStudy(target, i-1);
-                            } catch (IOException e) {
-                                e.printStackTrace();
-                            }
+                            Config.setAnimusStudy(target, i-1);
                             player.sendMessage(ChatColor.GREEN + "Successfully set " + target.getName() + "'s Animus Level to: " + i);
                             break;
                         case "mana":
@@ -68,11 +60,7 @@ public class AdminCommand implements CommandExecutor, TabCompleter {
                                 player.sendMessage(ChatColor.RED + "This isn't a valid number!");
                                 return false;
                             }
-                            try {
-                                Config.setMana(target, i);
-                            } catch (IOException e) {
-                                e.printStackTrace();
-                            }
+                            Config.setMana(target, i);
                             player.sendMessage(ChatColor.GREEN + "Successfully set " + target.getName() + "'s mana to: " + i);
                             break;
                     }

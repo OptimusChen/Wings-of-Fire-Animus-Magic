@@ -117,6 +117,8 @@ public class Eventlistener implements Listener {
     public void onChat(AsyncPlayerChatEvent e){
         ActivePlayer activePlayer = main.getActivePlayer(e.getPlayer().getName());
         if (activePlayer.isSelectingNumber){
+            e.setCancelled(true);
+
             new BukkitRunnable() {
                 @Override
                 public void run() {
@@ -130,174 +132,167 @@ public class Eventlistener implements Listener {
                             activePlayer.isSelectingNumber = false;
                         }
                     }catch (NumberFormatException n){
-                        activePlayer.player.playSound(activePlayer.player.getLocation(), Sound.ENTITY_VILLAGER_NO, 10, 1);
-                        activePlayer.player.sendMessage(ChatColor.RED + "This is an invalid number! Please try again!");
+                        if (e.getMessage().equalsIgnoreCase("cancel")){
+                            e.getPlayer().sendMessage(ChatColor.GRAY + "Successfully cancelled enchantment!");
+                            activePlayer.needsToSelectNumber = false;
+                            activePlayer.isSelectingNumber = false;
+                            e.setCancelled(true);
+                        }else{
+                            activePlayer.player.playSound(activePlayer.player.getLocation(), Sound.ENTITY_VILLAGER_NO, 10, 1);
+                            activePlayer.player.sendMessage(ChatColor.RED + "This is an invalid number! Please try again or type" + ChatColor.BOLD + " cancel" + ChatColor.RESET + ChatColor.RED + " to cancel!");
+                        }
                     }
                 }
             }.runTaskLater(main, 1);
-
-            e.setCancelled(true);
         }
     }
 
-    @EventHandler
-    public void onWorldChange(PlayerChangedWorldEvent e) {
-        new BukkitRunnable() {
-            @Override
-            public void run() {
-                for (EntityPlayer npc : NPC.getNpcs()) {
-                    NPC.addNpcPacket(npc);
-                }
-            }
-        }.runTaskLater(main, 1);
-    }
-
-    @EventHandler
-    public void onClick(InventoryClickEvent e) throws IOException {
-        Player player = (Player) e.getWhoClicked();
-        ActivePlayer activePlayer = main.getActivePlayer(player.getName());
-        if (e.getView().getTitle().equals("Accessories")) {
-            if (e.getCurrentItem() != null) {
-                if ((e.getCurrentItem().getItemMeta().getDisplayName().equalsIgnoreCase(" ") || e.getClick().isKeyboardClick() || e.getClick().isShiftClick())) {
-                    e.setCancelled(true);
-                } else if (e.getCurrentItem() != null) {
-                    if (e.getSlot() < 9 && !player.getItemOnCursor().getType().equals(Material.AIR) && e.getCurrentItem().getItemMeta().getDisplayName().startsWith(ChatColor.GREEN + "Active Accessory slot") && e.getClickedInventory().equals(activePlayer.accessoryBag)) {
-                        if (CraftItemStack.asNMSCopy(e.getCursor()).getItem() instanceof ItemArmor || CraftItemStack.asNMSCopy(e.getCursor()).getItem() instanceof ItemSkullPlayer || e.getCursor().getType().equals(ELYTRA)) {
-                            e.setCancelled(true);
-                            Config.addActiveAccessories(player, player.getItemOnCursor());
-
-                            Bukkit.getPluginManager().callEvent(new PlayerArmorEquipEvent(player, e.getCursor()));
-
-                            activePlayer.accessoryBag.setItem(e.getSlot(), player.getItemOnCursor());
-                            player.setItemOnCursor(null);
-                            player.playSound(player.getLocation(), Sound.UI_BUTTON_CLICK, 10, 10);
-                        } else {
-                            e.setCancelled(true);
-                            player.sendMessage(ChatColor.RED + "You may only put accessories/armor items in here!");
-                            player.playSound(player.getLocation(), Sound.ENTITY_ENDERMAN_TELEPORT, 10, 10);
-                        }
-                    } else if (e.getSlot() < 9 && player.getItemOnCursor().getType().equals(Material.AIR) && !e.getCurrentItem().getItemMeta().getDisplayName().startsWith(ChatColor.GREEN + "Active Accessory slot") && e.getClickedInventory().equals(activePlayer.accessoryBag)) {
-                        e.setCancelled(true);
-                        Config.removeActiveAccessories(player, e.getCurrentItem());
-
-                        Bukkit.getPluginManager().callEvent(new PlayerArmorUnequipEvent(player, e.getCurrentItem()));
-
-                        player.getInventory().addItem(e.getCurrentItem());
-
-                        activePlayer.accessoryBag.setItem(e.getSlot(), activePlayer.getItem(e.getSlot() + 1, "Active Accessory"));
-                        player.playSound(player.getLocation(), Sound.UI_BUTTON_CLICK, 10, 10);
-                    }else if (e.getSlot() < 9 && player.getItemOnCursor().getType().equals(Material.AIR) && e.getCurrentItem().getItemMeta().getDisplayName().startsWith(ChatColor.GREEN + "Active Accessory slot") && e.getClickedInventory().equals(activePlayer.accessoryBag)) {
-                        e.setCancelled(true);
-                    }else if (e.getSlot() < 36 && e.getSlot() > 17 && e.getClickedInventory().equals(activePlayer.accessoryBag)) {
-                        if (player.getItemOnCursor().getType().equals(Material.AIR)) {
-                            Config.removeAccessories(player, e.getCurrentItem());
-                            player.getInventory().addItem(e.getCurrentItem());
-                            activePlayer.accessoryBag.setItem(e.getSlot(), new ItemStack(Material.AIR));
-                            player.playSound(player.getLocation(), Sound.UI_BUTTON_CLICK, 10, 10);
-                            e.setCancelled(true);
-                            }
-                        } else if ((e.getSlot() > 44 && e.getSlot() < 49) && e.getCurrentItem().getItemMeta().getDisplayName().startsWith(ChatColor.GREEN + "Active Talisman slot") && e.getClickedInventory().equals(activePlayer.accessoryBag)) {
-                            if (e.getCursor() != null) {
-                                e.setCancelled(true);
-                                if (ChatColor.stripColor(e.getCursor().getItemMeta().getDisplayName()).toLowerCase().contains("talisman") && !ChatColor.stripColor(e.getCursor().getItemMeta().getDisplayName()).toLowerCase().contains("talisman slot")) {
-                                    e.setCancelled(true);
-                                    activePlayer.accessoryBag.setItem(e.getSlot(), player.getItemOnCursor());
-                                    Config.addActiveTalismans(player, player.getItemOnCursor());
-                                    player.playSound(player.getLocation(), Sound.UI_BUTTON_CLICK, 10, 10);
-                                    List<String> list = Arrays.asList(e.getCursor().getItemMeta().getDisplayName().toLowerCase().split(" "));
-                                    switch (ChatColor.stripColor(list.get(0))) {
-                                        case "running":
-                                            activePlayer.speedMultiplier = Integer.parseInt(list.get(2)) * 10;
-                                            player.setWalkSpeed((0.2F * (activePlayer.speedMultiplier / 100F + 1)));
-                                            break;
-                                        case "shield":
-                                            player.getAttribute(Attribute.GENERIC_ARMOR).setBaseValue(player.getAttribute(Attribute.GENERIC_ARMOR).getValue() + Integer.parseInt(list.get(2)));
-                                            break;
-                                        case "strength":
-                                            activePlayer.strengthMultiplier = Integer.parseInt(list.get(2)) * 5;
-                                            break;
-                                        case "gliding":
-                                            player.addPotionEffect(new PotionEffect(PotionEffectType.SLOW_FALLING, Integer.MAX_VALUE, 0));
-                                            break;
-                                        case "stealth":
-                                            player.addPotionEffect(new PotionEffect(PotionEffectType.INVISIBILITY, Integer.MAX_VALUE, 0));
-                                            break;
-                                        case "glowing":
-                                            player.addPotionEffect(new PotionEffect(PotionEffectType.GLOWING, Integer.MAX_VALUE, 0));
-                                            break;
-                                    }
-                                    player.setItemOnCursor(null);
-                                } else {
-                                    e.setCancelled(true);
-                                    player.sendMessage(ChatColor.RED + "You may only put talisman items in here!");
-                                    player.playSound(player.getLocation(), Sound.ENTITY_ENDERMAN_TELEPORT, 10, 10);
-                                }
-                            } else {
-                                e.setCancelled(true);
-                            }
-                        } else if (e.getSlot() > 44 && e.getSlot() < 49 && !e.getCurrentItem().getItemMeta().getDisplayName().startsWith(ChatColor.GREEN + "Active Talisman slot") && e.getClickedInventory().equals(activePlayer.accessoryBag)) {
-                            if (e.getCursor() != null){
-                                e.setCancelled(true);
-                                List<String> list = Arrays.asList(e.getCurrentItem().getItemMeta().getDisplayName().toLowerCase().split(" "));
-                                switch (ChatColor.stripColor(list.get(0))) {
-                                    case "running":
-                                        if (player.getWalkSpeed() <= 0.1){
-                                            player.setWalkSpeed(0.1F);
-                                        }else {
-                                            activePlayer.speedMultiplier = activePlayer.speedMultiplier - Integer.parseInt(list.get(2)) * 10;
-                                            player.setWalkSpeed((0.2F * (activePlayer.speedMultiplier / 100F + 1)));
-                                        }
-                                        break;
-                                    case "shield":
-                                        player.getAttribute(Attribute.GENERIC_ARMOR).setBaseValue(player.getAttribute(Attribute.GENERIC_ARMOR).getValue() - Integer.parseInt(list.get(2)));
-                                        break;
-                                    case "strength":
-                                        activePlayer.strengthMultiplier = activePlayer.strengthMultiplier - Integer.parseInt(list.get(2)) *5;
-                                        break;
-                                    case "gliding":
-                                        player.removePotionEffect(PotionEffectType.SLOW_FALLING);
-                                        break;
-                                    case "stealth":
-                                        player.removePotionEffect(PotionEffectType.INVISIBILITY);
-                                        break;
-                                    case "glowing":
-                                        player.removePotionEffect(PotionEffectType.GLOWING);
-                                        break;
-                                }
-                                Config.removeActiveTalismans(player, e.getCurrentItem());
-                                player.getInventory().addItem(e.getCurrentItem());
-                                activePlayer.accessoryBag.setItem(e.getSlot(), activePlayer.getItem(e.getSlot() - 44, "Active Talisman"));
-                                player.playSound(player.getLocation(), Sound.UI_BUTTON_CLICK, 10, 10);
-                            }else{
-                                e.setCancelled(true);
-                            }
-                        }else if (e.getSlot() > 44 && e.getSlot() < 49 && e.getCurrentItem().getItemMeta().getDisplayName().startsWith(ChatColor.GREEN + "Active Talisman slot") && e.getClickedInventory().equals(activePlayer.accessoryBag)) {
-                            if (e.getCursor() == null){
-                                e.setCancelled(true);
-                            }
-                        }else if (e.getSlot() > 44 && e.getSlot() < 49 && e.getCurrentItem().getItemMeta().getDisplayName().startsWith(ChatColor.GREEN + "Active Talisman slot") && e.getClickedInventory().equals(activePlayer.accessoryBag)){
-                            if (e.getCursor() == null) {
-                                e.setCancelled(true);
-                            }
-                        }
-                    }
-                }else {
-                    if (!e.getCursor().getType().equals(Material.AIR)) {
-                        if (CraftItemStack.asNMSCopy(e.getCursor()).getItem() instanceof ItemArmor || CraftItemStack.asNMSCopy(e.getCursor()).getItem() instanceof ItemSkullPlayer || e.getCursor().getType().equals(ELYTRA) || e.getCursor().getItemMeta().getDisplayName().contains("Talisman")) {
-                            Config.addAccessories(player, e.getCursor());
-                            player.playSound(player.getLocation(), Sound.UI_BUTTON_CLICK, 10, 10);
-                        } else {
-                            e.setCancelled(true);
-                            player.sendMessage(ChatColor.RED + "You may only put accessories/armor items in here!");
-                            player.playSound(player.getLocation(), Sound.ENTITY_ENDERMAN_TELEPORT, 10, 10);
-                        }
-                    }else {
-                        e.setCancelled(true);
-                        player.sendMessage(ChatColor.RED + "Active and stored compatibility coming soon....I think...");
-                    }
-                }
-            }
-        }
+//    @EventHandler
+//    public void onClick(InventoryClickEvent e) throws IOException {
+//        Player player = (Player) e.getWhoClicked();
+//        ActivePlayer activePlayer = main.getActivePlayer(player.getName());
+//        if (e.getView().getTitle().equals("Accessories")) {
+//            if (e.getCurrentItem() != null) {
+//                if ((e.getCurrentItem().getItemMeta().getDisplayName().equalsIgnoreCase(" ") || e.getClick().isKeyboardClick() || e.getClick().isShiftClick())) {
+//                    e.setCancelled(true);
+//                } else if (e.getCurrentItem() != null) {
+//                    if (e.getSlot() < 9 && !player.getItemOnCursor().getType().equals(Material.AIR) && e.getCurrentItem().getItemMeta().getDisplayName().startsWith(ChatColor.GREEN + "Active Accessory slot") && e.getClickedInventory().equals(activePlayer.accessoryBag)) {
+//                        if (CraftItemStack.asNMSCopy(e.getCursor()).getItem() instanceof ItemArmor || CraftItemStack.asNMSCopy(e.getCursor()).getItem() instanceof ItemSkullPlayer || e.getCursor().getType().equals(ELYTRA)) {
+//                            e.setCancelled(true);
+//                            Config.addActiveAccessories(player, player.getItemOnCursor());
+//
+//                            Bukkit.getPluginManager().callEvent(new PlayerArmorEquipEvent(player, e.getCursor()));
+//
+//                            activePlayer.accessoryBag.setItem(e.getSlot(), player.getItemOnCursor());
+//                            player.setItemOnCursor(null);
+//                            player.playSound(player.getLocation(), Sound.UI_BUTTON_CLICK, 10, 10);
+//                        } else {
+//                            e.setCancelled(true);
+//                            player.sendMessage(ChatColor.RED + "You may only put accessories/armor items in here!");
+//                            player.playSound(player.getLocation(), Sound.ENTITY_ENDERMAN_TELEPORT, 10, 10);
+//                        }
+//                    } else if (e.getSlot() < 9 && player.getItemOnCursor().getType().equals(Material.AIR) && !e.getCurrentItem().getItemMeta().getDisplayName().startsWith(ChatColor.GREEN + "Active Accessory slot") && e.getClickedInventory().equals(activePlayer.accessoryBag)) {
+//                        e.setCancelled(true);
+//                        Config.removeActiveAccessories(player, e.getCurrentItem());
+//
+//                        Bukkit.getPluginManager().callEvent(new PlayerArmorUnequipEvent(player, e.getCurrentItem()));
+//
+//                        player.getInventory().addItem(e.getCurrentItem());
+//
+//                        activePlayer.accessoryBag.setItem(e.getSlot(), activePlayer.getItem(e.getSlot() + 1, "Active Accessory"));
+//                        player.playSound(player.getLocation(), Sound.UI_BUTTON_CLICK, 10, 10);
+//                    }else if (e.getSlot() < 9 && player.getItemOnCursor().getType().equals(Material.AIR) && e.getCurrentItem().getItemMeta().getDisplayName().startsWith(ChatColor.GREEN + "Active Accessory slot") && e.getClickedInventory().equals(activePlayer.accessoryBag)) {
+//                        e.setCancelled(true);
+//                    }else if (e.getSlot() < 36 && e.getSlot() > 17 && e.getClickedInventory().equals(activePlayer.accessoryBag)) {
+//                        if (player.getItemOnCursor().getType().equals(Material.AIR)) {
+//                            Config.removeAccessories(player, e.getCurrentItem());
+//                            player.getInventory().addItem(e.getCurrentItem());
+//                            activePlayer.accessoryBag.setItem(e.getSlot(), new ItemStack(Material.AIR));
+//                            player.playSound(player.getLocation(), Sound.UI_BUTTON_CLICK, 10, 10);
+//                            e.setCancelled(true);
+//                        }
+//                    } else if ((e.getSlot() > 44 && e.getSlot() < 49) && e.getCurrentItem().getItemMeta().getDisplayName().startsWith(ChatColor.GREEN + "Active Talisman slot") && e.getClickedInventory().equals(activePlayer.accessoryBag)) {
+//                        if (e.getCursor() != null) {
+//                            e.setCancelled(true);
+//                            if (ChatColor.stripColor(e.getCursor().getItemMeta().getDisplayName()).toLowerCase().contains("talisman") && !ChatColor.stripColor(e.getCursor().getItemMeta().getDisplayName()).toLowerCase().contains("talisman slot")) {
+//                                e.setCancelled(true);
+//                                activePlayer.accessoryBag.setItem(e.getSlot(), player.getItemOnCursor());
+//                                Config.addActiveTalismans(player, player.getItemOnCursor());
+//                                player.playSound(player.getLocation(), Sound.UI_BUTTON_CLICK, 10, 10);
+//                                List<String> list = Arrays.asList(e.getCursor().getItemMeta().getDisplayName().toLowerCase().split(" "));
+//                                switch (ChatColor.stripColor(list.get(0))) {
+//                                    case "running":
+//                                        activePlayer.speedMultiplier = Integer.parseInt(list.get(2)) * 10;
+//                                        player.setWalkSpeed((0.2F * (activePlayer.speedMultiplier / 100F + 1)));
+//                                        break;
+//                                    case "shield":
+//                                        player.getAttribute(Attribute.GENERIC_ARMOR).setBaseValue(player.getAttribute(Attribute.GENERIC_ARMOR).getValue() + Integer.parseInt(list.get(2)));
+//                                        break;
+//                                    case "strength":
+//                                        activePlayer.strengthMultiplier = Integer.parseInt(list.get(2)) * 5;
+//                                        break;
+//                                    case "gliding":
+//                                        player.addPotionEffect(new PotionEffect(PotionEffectType.SLOW_FALLING, Integer.MAX_VALUE, 0));
+//                                        break;
+//                                    case "stealth":
+//                                        player.addPotionEffect(new PotionEffect(PotionEffectType.INVISIBILITY, Integer.MAX_VALUE, 0));
+//                                        break;
+//                                    case "glowing":
+//                                        player.addPotionEffect(new PotionEffect(PotionEffectType.GLOWING, Integer.MAX_VALUE, 0));
+//                                        break;
+//                                }
+//                                player.setItemOnCursor(null);
+//                            } else {
+//                                e.setCancelled(true);
+//                                player.sendMessage(ChatColor.RED + "You may only put talisman items in here!");
+//                                player.playSound(player.getLocation(), Sound.ENTITY_ENDERMAN_TELEPORT, 10, 10);
+//                            }
+//                        } else {
+//                            e.setCancelled(true);
+//                        }
+//                    } else if (e.getSlot() > 44 && e.getSlot() < 49 && !e.getCurrentItem().getItemMeta().getDisplayName().startsWith(ChatColor.GREEN + "Active Talisman slot") && e.getClickedInventory().equals(activePlayer.accessoryBag)) {
+//                        if (e.getCursor() != null){
+//                            e.setCancelled(true);
+//                            List<String> list = Arrays.asList(e.getCurrentItem().getItemMeta().getDisplayName().toLowerCase().split(" "));
+//                            switch (ChatColor.stripColor(list.get(0))) {
+//                                case "running":
+//                                    if (player.getWalkSpeed() <= 0.1){
+//                                        player.setWalkSpeed(0.1F);
+//                                    }else {
+//                                        activePlayer.speedMultiplier = activePlayer.speedMultiplier - Integer.parseInt(list.get(2)) * 10;
+//                                        player.setWalkSpeed((0.2F * (activePlayer.speedMultiplier / 100F + 1)));
+//                                    }
+//                                    break;
+//                                case "shield":
+//                                    player.getAttribute(Attribute.GENERIC_ARMOR).setBaseValue(player.getAttribute(Attribute.GENERIC_ARMOR).getValue() - Integer.parseInt(list.get(2)));
+//                                    break;
+//                                case "strength":
+//                                    activePlayer.strengthMultiplier = activePlayer.strengthMultiplier - Integer.parseInt(list.get(2)) *5;
+//                                    break;
+//                                case "gliding":
+//                                    player.removePotionEffect(PotionEffectType.SLOW_FALLING);
+//                                    break;
+//                                case "stealth":
+//                                    player.removePotionEffect(PotionEffectType.INVISIBILITY);
+//                                    break;
+//                                case "glowing":
+//                                    player.removePotionEffect(PotionEffectType.GLOWING);
+//                                    break;
+//                            }
+//                            Config.removeActiveTalismans(player, e.getCurrentItem());
+//                            player.getInventory().addItem(e.getCurrentItem());
+//                            activePlayer.accessoryBag.setItem(e.getSlot(), activePlayer.getItem(e.getSlot() - 44, "Active Talisman"));
+//                            player.playSound(player.getLocation(), Sound.UI_BUTTON_CLICK, 10, 10);
+//                        }else{
+//                            e.setCancelled(true);
+//                        }
+//                    }else if (e.getSlot() > 44 && e.getSlot() < 49 && e.getCurrentItem().getItemMeta().getDisplayName().startsWith(ChatColor.GREEN + "Active Talisman slot") && e.getClickedInventory().equals(activePlayer.accessoryBag)) {
+//                        if (e.getCursor() == null){
+//                            e.setCancelled(true);
+//                        }
+//                    }else if (e.getSlot() > 44 && e.getSlot() < 49 && e.getCurrentItem().getItemMeta().getDisplayName().startsWith(ChatColor.GREEN + "Active Talisman slot") && e.getClickedInventory().equals(activePlayer.accessoryBag)){
+//                        if (e.getCursor() == null) {
+//                            e.setCancelled(true);
+//                        }
+//                    }
+//                }
+//            }else {
+//                if (!e.getCursor().getType().equals(Material.AIR)) {
+//                    if (CraftItemStack.asNMSCopy(e.getCursor()).getItem() instanceof ItemArmor || CraftItemStack.asNMSCopy(e.getCursor()).getItem() instanceof ItemSkullPlayer || e.getCursor().getType().equals(ELYTRA) || e.getCursor().getItemMeta().getDisplayName().contains("Talisman")) {
+//                        Config.addAccessories(player, e.getCursor());
+//                        player.playSound(player.getLocation(), Sound.UI_BUTTON_CLICK, 10, 10);
+//                    } else {
+//                        e.setCancelled(true);
+//                        player.sendMessage(ChatColor.RED + "You may only put accessories/armor items in here!");
+//                        player.playSound(player.getLocation(), Sound.ENTITY_ENDERMAN_TELEPORT, 10, 10);
+//                    }
+//                }else {
+//                    e.setCancelled(true);
+//                    player.sendMessage(ChatColor.RED + "Active and stored compatibility coming soon....I think...");
+//                }
+//            }
+//        }
+//    }
 
     @EventHandler
     public void onBlockPlace(BlockPlaceEvent e){
@@ -385,31 +380,6 @@ public class Eventlistener implements Listener {
     }
 
     @EventHandler
-    public void onNpcJoin(PlayerJoinEvent e){
-        PacketReader reader = new PacketReader();
-        reader.inject(e.getPlayer());
-        if (NPC.getNpcs() == null){
-            return;
-        }else if (NPC.getNpcs().isEmpty()){
-            return;
-        }else{
-            new BukkitRunnable() {
-                @Override
-                public void run() {
-                    NPC.addJoinPacket(e.getPlayer());
-                }
-            }.runTaskLater(Main.getInstance(), 1);
-        }
-    }
-
-    @EventHandler
-    public void onClick(NpcClickEvent e){
-        if (e.getNpc().getName().equalsIgnoreCase(ChatColor.YELLOW + "" + ChatColor.BOLD + "Click")) {
-            main.openStudyGui(e.getPlayer());
-        }
-    }
-
-    @EventHandler
     public void onLeave(PlayerQuitEvent e){
         Player player = e.getPlayer();
 
@@ -437,20 +407,6 @@ public class Eventlistener implements Listener {
                     e.getPlayer().performCommand("ab");
                 }
             }
-        }
-    }
-
-    @EventHandler
-    public void onEntityInteract(PlayerArmorStandManipulateEvent e){
-        if (e.getRightClicked().getName().equals("Starflight")) {
-            e.setCancelled(true);
-        }
-    }
-
-    @EventHandler
-    public void onDmg(EntityDamageByEntityEvent e){
-        if (e.getEntity().getName().equals(ChatColor.YELLOW + "" + ChatColor.BOLD + "Click")){
-            e.setCancelled(true);
         }
     }
 

@@ -30,22 +30,30 @@ public class Config {
         return list;
     }
 
-    public static void addActiveAccessories(Player player, ItemStack i) throws IOException {
+    public static void addActiveAccessories(Player player, ItemStack i) {
         File file = new File(main.getDataFolder()+File.separator+"Players"+File.separator+player.getUniqueId()+".yml");
         FileConfiguration config = YamlConfiguration.loadConfiguration(file);
         ArrayList<ItemStack> accessories = (ArrayList<ItemStack>) config.getList("stored-active");
         accessories.add(i);
         config.set("stored-active", accessories);
-        config.save(file);
+        try {
+            config.save(file);
+        }catch (IOException e){
+
+        }
     }
 
-    public static void removeAccessories(Player player, ItemStack i) throws IOException {
+    public static void removeAccessories(Player player, ItemStack i) {
         File file = new File(main.getDataFolder()+File.separator+"Players"+File.separator+player.getUniqueId()+".yml");
         FileConfiguration config = YamlConfiguration.loadConfiguration(file);
         ArrayList<ItemStack> list = (ArrayList<ItemStack>) config.getList("stored-accessories");
         list.remove(i);
         config.set("stored-accessories", list);
-        config.save(file);
+        try {
+            config.save(file);
+        }catch (IOException e){
+
+        }
     }
 
     public static ArrayList<ItemStack> getActiveAccessories(Player player){
@@ -55,13 +63,17 @@ public class Config {
         return list;
     }
 
-    public static void addAccessories(Player player, ItemStack i) throws IOException {
+    public static void addAccessories(Player player, ItemStack i) {
         File file = new File(main.getDataFolder()+File.separator+"Players"+File.separator+player.getUniqueId()+".yml");
         FileConfiguration config = YamlConfiguration.loadConfiguration(file);
         ArrayList<ItemStack> accessories = (ArrayList<ItemStack>) config.getList("stored-accessories");
         accessories.add(i);
         config.set("stored-accessories", accessories);
-        config.save(file);
+        try {
+            config.save(file);
+        }catch (IOException e){
+
+        }
     }
 
     public static ArrayList<ItemStack> getActiveTalismans(Player player){
@@ -71,38 +83,54 @@ public class Config {
         return list;
     }
 
-    public static void removeActiveAccessories(Player player, ItemStack i) throws IOException {
+    public static void removeActiveAccessories(Player player, ItemStack i) {
         File file = new File(main.getDataFolder()+File.separator+"Players"+File.separator+player.getUniqueId()+".yml");
         FileConfiguration config = YamlConfiguration.loadConfiguration(file);
         ArrayList<ItemStack> list = (ArrayList<ItemStack>) config.getList("stored-active");
         list.remove(i);
         config.set("stored-active", list);
-        config.save(file);
+        try {
+            config.save(file);
+        }catch (IOException e){
+
+        }
     }
 
-    public static void addActiveTalismans(Player player, ItemStack i) throws IOException {
+    public static void addActiveTalismans(Player player, ItemStack i) {
         File file = new File(main.getDataFolder()+File.separator+"Players"+File.separator+player.getUniqueId()+".yml");
         FileConfiguration config = YamlConfiguration.loadConfiguration(file);
         ArrayList<ItemStack> accessories = (ArrayList<ItemStack>) config.getList("stored-talismans");
         accessories.add(i);
         config.set("stored-talismans", accessories);
-        config.save(file);
+        try {
+            config.save(file);
+        }catch (IOException e){
+
+        }
     }
 
-    public static void removeActiveTalismans(Player player, ItemStack i) throws IOException {
+    public static void removeActiveTalismans(Player player, ItemStack i) {
         File file = new File(main.getDataFolder()+File.separator+"Players"+File.separator+player.getUniqueId()+".yml");
         FileConfiguration config = YamlConfiguration.loadConfiguration(file);
         ArrayList<ItemStack> list = (ArrayList<ItemStack>) config.getList("stored-talismans");
         list.remove(i);
         config.set("stored-talismans", list);
-        config.save(file);
+        try {
+            config.save(file);
+        }catch (IOException e){
+
+        }
     }
 
-    public static void setAnimus(Player player, boolean b) throws IOException {
+    public static void setAnimus(Player player, boolean b) {
         File file = new File(main.getDataFolder()+File.separator+"Players"+File.separator+player.getUniqueId()+".yml");
         FileConfiguration config = YamlConfiguration.loadConfiguration(file);
         config.set("animus", b);
-        config.save(file);
+        try {
+            config.save(file);
+        }catch (IOException e){
+
+        }
     }
 
     public static boolean isAnimus(Player player){
@@ -111,11 +139,15 @@ public class Config {
         return config.getBoolean("animus");
     }
 
-    public static void setUndead(Player player, boolean b) throws IOException {
+    public static void setUndead(Player player, boolean b) {
         File file = new File(main.getDataFolder()+File.separator+"Players"+File.separator+player.getUniqueId()+".yml");
         FileConfiguration config = YamlConfiguration.loadConfiguration(file);
         config.set("undead", b);
-        config.save(file);
+        try {
+            config.save(file);
+        }catch (IOException e){
+
+        }
     }
 
     public static boolean isUndead(Player player){
@@ -137,11 +169,15 @@ public class Config {
     }
      */
 
-    public static void setGentleTalons(Player player, boolean b) throws IOException {
+    public static void setGentleTalons(Player player, boolean b) {
         File file = new File(main.getDataFolder()+File.separator+"Players"+File.separator+player.getUniqueId()+".yml");
         FileConfiguration config = YamlConfiguration.loadConfiguration(file);
         config.set("gentle-talons", b);
-        config.save(file);
+        try {
+            config.save(file);
+        }catch (IOException e){
+
+        }
     }
 
     public static boolean isGentleTalons(Player player){
@@ -150,11 +186,15 @@ public class Config {
         return config.getBoolean("gentle-talons");
     }
 
-    public static void setAnimusStudy(Player player, int i) throws IOException {
+    public static void setAnimusStudy(Player player, int i) {
         File file = new File(main.getDataFolder()+File.separator+"Players"+File.separator+player.getUniqueId()+".yml");
         FileConfiguration config = YamlConfiguration.loadConfiguration(file);
         config.set("animus-study-level", i);
-        config.save(file);
+        try {
+            config.save(file);
+        }catch (IOException e){
+
+        }
     }
 
     public static int getAnimusStudyLevel(Player player){
@@ -163,11 +203,15 @@ public class Config {
         return config.getInt("animus-study-level");
     }
 
-    public static void setMana(Player player, int i) throws IOException {
+    public static void setMana(Player player, int i) {
         File file = new File(main.getDataFolder()+File.separator+"Players"+File.separator+player.getUniqueId()+".yml");
         FileConfiguration config = YamlConfiguration.loadConfiguration(file);
         config.set("mana", i);
-        config.save(file);
+        try {
+            config.save(file);
+        }catch (IOException e){
+
+        }
     }
 
     public static int getMana(Player player){
@@ -176,11 +220,15 @@ public class Config {
         return config.getInt("mana");
     }
 
-    public static void setShapeshift(Player player, String str) throws IOException {
+    public static void setShapeshift(Player player, String str) {
         File file = new File(main.getDataFolder()+File.separator+"Players"+File.separator+player.getUniqueId()+".yml");
         FileConfiguration config = YamlConfiguration.loadConfiguration(file);
         config.set("shapeshift", str);
-        config.save(file);
+        try {
+            config.save(file);
+        }catch (IOException e){
+
+        }
     }
 
     public static String getShapeshift(Player player){

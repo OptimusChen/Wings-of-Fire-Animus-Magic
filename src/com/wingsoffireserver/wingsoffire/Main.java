@@ -10,6 +10,7 @@ import com.wingsoffireserver.wingsoffire.Commands.*;
 import com.wingsoffireserver.wingsoffire.Commands.*;
 import com.wingsoffireserver.wingsoffire.Inventory.WoFInventory;
 import com.wingsoffireserver.wingsoffire.NPC.NPC;
+import com.wingsoffireserver.wingsoffire.NPC.NPCListener;
 import com.wingsoffireserver.wingsoffire.NPC.PacketReader;
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;
@@ -71,6 +72,8 @@ public class Main extends JavaPlugin {
         shapeshiftInventory = Bukkit.createInventory(null, 9, "Select Tribe");
         this.main = this;
         getServer().getPluginManager().registerEvents(new Eventlistener(this), this);
+        getServer().getPluginManager().registerEvents(new NPCListener(), this);
+        getServer().getPluginManager().registerEvents(new AccessoryBagListener(this), this);
         getServer().getPluginManager().registerEvents(new ArmorListener(), this);
         getServer().getPluginManager().registerEvents(new DispenserArmorListener(), this);
         getServer().getPluginManager().registerEvents(new EventAnalyser(), this);
@@ -377,9 +380,25 @@ public class Main extends JavaPlugin {
         ActivePlayer activePlayer = getActivePlayer(player.getName());
         activePlayer.isSelectingNumber = true;
         activePlayer.maxLevel = maxLevel;
-        player.sendMessage(ChatColor.GRAY + "Please enter your query in chat.\nThe max level for this enchantment is: " + IntegerToRomanNumeral(maxLevel));
+        player.sendMessage(ChatColor.GRAY + "Please enter your query in chat or type " + ChatColor.BOLD + "cancel " +
+                ChatColor.RESET + "" + ChatColor.GRAY + "to cancel.\nThe max level for this enchantment is: " + ChatColor.BOLD +
+                IntegerToRomanNumeral(maxLevel));
         player.closeInventory();
         player.playSound(player.getLocation(), Sound.ENTITY_VILLAGER_YES, 10, 1);
+        new BukkitRunnable() {
+            @Override
+            public void run() {
+                if (player.isOnline()) {
+                    if (activePlayer.isSelectingNumber){
+                        player.sendMessage(ChatColor.GRAY + "Cancelled enchantment! You took too long!");
+                        activePlayer.needsToSelectNumber = false;
+                        activePlayer.isSelectingNumber = false;
+                    }
+                } else {
+                    cancel();
+                }
+            }
+        }.runTaskLater(this, 30*20);
     }
 
     public void openAnimusGui(Player player){
@@ -554,11 +573,7 @@ public class Main extends JavaPlugin {
                                 player.sendMessage(ChatColor.AQUA + "--------------------");
                                 player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 10, 1);
                                 getActivePlayer(player.getName()).upgrade = false;
-                                try {
-                                    Config.setAnimusStudy(player, Config.getAnimusStudyLevel(player) + 1);
-                                } catch (IOException e) {
-                                    e.printStackTrace();
-                                }
+                                Config.setAnimusStudy(player, Config.getAnimusStudyLevel(player) + 1);
                             } else {
                                 player.sendMessage(ChatColor.AQUA + "--------------------");
                                 player.sendMessage(ChatColor.AQUA + "   Animus Level up  ");
@@ -566,11 +581,7 @@ public class Main extends JavaPlugin {
                                 player.sendMessage(ChatColor.AQUA + "--------------------");
                                 player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 10, 1);
                                 getActivePlayer(player.getName()).upgrade = false;
-                                try {
-                                    Config.setAnimusStudy(player, Config.getAnimusStudyLevel(player) + 1);
-                                } catch (IOException e) {
-                                    e.printStackTrace();
-                                }
+                                Config.setAnimusStudy(player, Config.getAnimusStudyLevel(player) + 1);
                             }
                         } else {
                             cancel();
@@ -678,11 +689,7 @@ public class Main extends JavaPlugin {
                         ActivePlayer activePlayer = getActivePlayer(player.getName());
                         activePlayer.animusManaBar.setTitle(ChatColor.BLUE + "Animus Mana: " + Config.getMana(player));
                         if (i == 1 && Config.getMana(player) <= 95){
-                            try {
-                                Config.setMana(player, Config.getMana(player) + 5);
-                            } catch (IOException e) {
-                                e.printStackTrace();
-                            }
+                            Config.setMana(player, Config.getMana(player) + 5);
                         }
 
                     }
